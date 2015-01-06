@@ -10,7 +10,7 @@ public class Algorithm {
 			Reader reader = new Reader(args[0]);
 			TreeSolution tree = reader.getTreeSolution();
 			
-			while(tree.updateTreeSolution());
+			//while(tree.updateTreeSolution());
 			
 			//maybe write the solution now to a file or so
 			
