@@ -31,7 +31,7 @@ public class Reader {
 //		LinkedList<Arc2> L2 = new LinkedList<Arc2>();
 		int numberOfNodes= -1;
 		int numberOfArcs;
-
+		double maxCost = 0; // need that for the costs of the artificial arcs
 
 		while((line = reader.readLine()) != null) {
 			System.out.println(line);
@@ -60,6 +60,7 @@ public class Reader {
 				//check if upper capacity is <0 --> Infinity
 				double upperCapacity = arrDouble[1] < 0? Double.POSITIVE_INFINITY : arrDouble[1];
 
+				maxCost = Double.max(maxCost, arrDouble[2]);
 				//set flow to lower capacity
 				int startNodeIndex = Integer.parseInt(arr[1]);
 				int endNodeIndex = Integer.parseInt(arr[2]);
@@ -106,7 +107,7 @@ public class Reader {
 		if(numberOfNodes<0)
 			System.out.println("Fehler beim einlesen!");
 		
-		TreeSolution treeSolution = new TreeSolution(L2, nodes, numberOfNodes);
+		TreeSolution treeSolution = new TreeSolution(L2, nodes, numberOfNodes,maxCost);
 		System.out.println(treeSolution.toString());
 	}
 

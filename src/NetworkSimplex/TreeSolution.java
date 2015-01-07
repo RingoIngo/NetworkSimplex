@@ -18,6 +18,9 @@ public class TreeSolution {
 	
 	private Arc[] Tree; //the arcs in the tree
 	private ArrayList<Arc2> Tree2 = new ArrayList<Arc2>();
+	
+//	private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the costs in the nodes
+	private double[] fairPrices;
 
 
 
@@ -31,19 +34,23 @@ public class TreeSolution {
 
 	}
 
-	public TreeSolution(ArrayList<Arc2>  L2, Node[] nodes, int numberOfNodes) {
+	public TreeSolution(ArrayList<Arc2>  L2, Node[] nodes, int numberOfNodes, double maxCost) {
 		this.L2 = L2;
-		int kIndex = numberOfNodes +1;	//index of the artificial node
+//		int kIndex = numberOfNodes +1;	//index of the artificial node
+		int kIndex = 0;
+		double costArtificialArc = 1 + 0.5 * numberOfNodes* maxCost;	//->skript
 		
-		this.predecessorArray = new int[numberOfNodes+2];
-		predecessorArray[numberOfNodes] = -1;
+		this.predecessorArray = new int[numberOfNodes+1];
+		predecessorArray[kIndex] = -1;
 		
-		this.depthArray = new int[numberOfNodes+2];
-		depthArray[numberOfNodes +1]= 0;
+		this.depthArray = new int[numberOfNodes+1];
+		depthArray[kIndex]= 0;
 		
-		this.thread = new int[numberOfNodes +2];
-		thread[numberOfNodes +1] = numberOfNodes; //richtig initialisiert?
+		this.thread = new int[numberOfNodes +1];
+		thread[kIndex] = numberOfNodes; //richtig initialisiert?
 		
+		this.fairPrices = new double[numberOfNodes+1];
+		fairPrices[kIndex] = 0; //this is the one that choose arbritrariliy (n variables, n-1 equations)
 		
 		int startNodeIndex;
 		int endNodeIndex;
@@ -52,12 +59,14 @@ public class TreeSolution {
 			if(node == null || node.getNettodemand() >= 0) {
 				startNodeIndex = kIndex;
 				endNodeIndex = i;
+				fairPrices[i] = costArtificialArc;
 			}
 			else {
 				startNodeIndex = i;
 				endNodeIndex = kIndex;
+				fairPrices[i] = -costArtificialArc;
 			}
-			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0);	//add artificial arcs
+			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, 0);	//add artificial arcs
 			Tree2.add(arc);
 			this.predecessorArray[i] = kIndex;
 			this.depthArray[i] = 1;

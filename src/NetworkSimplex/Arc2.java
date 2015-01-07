@@ -20,6 +20,7 @@ public class Arc2 {
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
 		this.flow =flow;
+		this.reducedCosts = -1;
 	}
 
 
