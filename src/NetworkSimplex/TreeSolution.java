@@ -63,6 +63,24 @@ public class TreeSolution {
 			this.depthArray[i] = 1;
 			this.thread[i] = kIndex;
 		}
+		
+		System.out.println("Predecessor Array: ");
+		for(int i = 0; i<predecessorArray.length; i++)
+			System.out.println(predecessorArray[i]);
+		
+		System.out.println("depth array: ");
+		for(int i = 0; i<depthArray.length; i++)
+			System.out.println(depthArray[i]);
+		
+		System.out.println("thread: ");
+		for(int i = 0; i<thread.length; i++)
+			System.out.println(thread[i]);
+		
+		System.out.println("L2");
+		System.out.println(L2);
+		
+		System.out.println("tree2");
+		System.out.println(Tree2);
 
 	}
 

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Reader {
 
@@ -12,7 +13,8 @@ public class Reader {
 
 	public Reader(String filename) throws IOException {
 
-
+		long startTime = System.currentTimeMillis();	
+		
 		//Create object of FileReader
 		FileReader inputFile = new FileReader(filename);
 
@@ -26,6 +28,7 @@ public class Reader {
 		ArrayList<Node> VNeg = new ArrayList<Node>();
 		ArrayList<Arc> L = new ArrayList<Arc>();
 		ArrayList<Arc2> L2 = new ArrayList<Arc2>();
+//		LinkedList<Arc2> L2 = new LinkedList<Arc2>();
 		int numberOfNodes= -1;
 		int numberOfArcs;
 
@@ -63,8 +66,10 @@ public class Reader {
 				Arc2 arc = new Arc2(startNodeIndex,endNodeIndex, arrDouble[0] ,upperCapacity, arrDouble[2], arrDouble[0]);
 				//Arc arc = new Arc(Integer.parseInt(arr[1]),Integer.parseInt(arr[2]),arrDouble[0] ,arrDouble[1], arrDouble[2], arrDouble[0]);
 
+							
 				//add arc to L partition
 				L2.add(arc); //and this seems to be also quite time consuming
+				
 				
 				if(arc.getLowerLimit() > 0){		//this code snippet takes A LOT OF TIME!!!
 					//update nettodemands of nodes
@@ -91,10 +96,12 @@ public class Reader {
 
 		//		System.out.println(VPos);
 		//		System.out.println(VNeg);
-		System.out.println(L2);
+//		System.out.println(L2);
 		for(int i =0; i< nodes.length; i++)
 			System.out.println(nodes[i]);
 		reader.close();
+		long endTime = System.currentTimeMillis();
+		System.out.println("execution with LInkedList took " + (endTime - startTime) + " milliseconds");
 		
 		if(numberOfNodes<0)
 			System.out.println("Fehler beim einlesen!");
