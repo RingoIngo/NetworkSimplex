@@ -64,24 +64,6 @@ public class TreeSolution {
 			this.thread[i] = kIndex;
 		}
 		
-		System.out.println("Predecessor Array: ");
-		for(int i = 0; i<predecessorArray.length; i++)
-			System.out.println(predecessorArray[i]);
-		
-		System.out.println("depth array: ");
-		for(int i = 0; i<depthArray.length; i++)
-			System.out.println(depthArray[i]);
-		
-		System.out.println("thread: ");
-		for(int i = 0; i<thread.length; i++)
-			System.out.println(thread[i]);
-		
-		System.out.println("L2");
-		System.out.println(L2);
-		
-		System.out.println("tree2");
-		System.out.println(Tree2);
-
 	}
 
 	public void setPredecessorArray(int[] predecessorArray) {
@@ -119,6 +101,36 @@ public class TreeSolution {
 
 	}
 
-	//...
+	private String intArrayToString(int[] array){
+		StringBuffer string = new StringBuffer();
+		for(int i = 0; i<array.length; i++) {
+			string.append(" ");
+			string.append(i);
+			string.append(": ");
+			string.append(array[i]);
+		}
+		return string.toString();
+	}
+	
+	
+	public String toString() {
+		StringBuffer string = new StringBuffer("Predecessor Array: ");
+		string.append(intArrayToString(predecessorArray));
+		
+		string.append("\ndepth Array: ");
+		string.append(intArrayToString(depthArray));
+		
+		string.append("\nthread Array: ");
+		string.append(intArrayToString(thread));
+		
+		
+		string.append("\nL2: ");
+		string.append(L2);
+		
+		string.append("\nTree2: ");
+		string.append(Tree2);
+		
+		return string.toString();
+	}
 
 }

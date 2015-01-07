@@ -107,6 +107,7 @@ public class Reader {
 			System.out.println("Fehler beim einlesen!");
 		
 		TreeSolution treeSolution = new TreeSolution(L2, nodes, numberOfNodes);
+		System.out.println(treeSolution.toString());
 	}
 
 	public TreeSolution getTreeSolution() {
