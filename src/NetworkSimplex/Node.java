@@ -41,6 +41,15 @@ public class Node {
 		this.nettodemand = nettodemand;
 	}
 	
-	
+	public String toString() {
+		StringBuffer string  = new StringBuffer("index: ");
+		string.append(index);
+		string.append(" demand: ");
+		string.append(demand);
+		string.append(" netto demand: ");
+		string.append(nettodemand);
+		
+		return string.toString();
+	}
 
 }

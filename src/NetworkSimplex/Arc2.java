@@ -1,9 +1,9 @@
 package NetworkSimplex;
 
-public class Arc {
+public class Arc2 {
 	
-	private Node startNode;
-	private Node endNode;
+	private int startNodeIndex;
+	private int endNodeIndex;
 	private double cost;
 	private double lowerLimit;
 	private double upperLimit;
@@ -11,11 +11,11 @@ public class Arc {
 	private double flow;
 	
 	
-	public Arc(Node startNode, Node endNode, double cost, double lowerLimit,
-			double upperLimit, double flow) {
+	public Arc2(int startNodeIndex, int endNodeIndex, double lowerLimit,
+			double upperLimit, double cost, double flow) {
 		super();
-		this.startNode = startNode;
-		this.endNode = endNode;
+		this.startNodeIndex = startNodeIndex;
+		this.endNodeIndex = endNodeIndex;
 		this.cost = cost;
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
@@ -33,23 +33,23 @@ public class Arc {
 	}
 
 
-	public Node getStartNode() {
-		return startNode;
+	public int getStartNodeIndex() {
+		return startNodeIndex;
 	}
 
 
-	public void setStartNode(Node startNode) {
-		this.startNode = startNode;
+	public void setStartNodeIndex(int startNodeIndex) {
+		this.startNodeIndex = startNodeIndex;
 	}
 
 
-	public Node getEndNode() {
-		return endNode;
+	public int getEndNodeIndex() {
+		return endNodeIndex;
 	}
 
 
-	public void setEndNode(Node endNode) {
-		this.endNode = endNode;
+	public void setEndNodeIndex(int endNodeIndex) {
+		this.endNodeIndex = endNodeIndex;
 	}
 
 
@@ -93,10 +93,10 @@ public class Arc {
 	}
 	
 	public String toString(){
-		StringBuffer string  = new StringBuffer("startNode: ");
-		string.append(startNode.toString());
-		string.append(" endNode: ");
-		string.append(endNode.toString());
+		StringBuffer string  = new StringBuffer("startNodeIndex: ");
+		string.append(startNodeIndex);
+		string.append(" endNodeIndex: ");
+		string.append(endNodeIndex);
 		string.append(" cost: ");
 		string.append(cost);
 		string.append(" lowerLimit: ");
@@ -112,4 +112,3 @@ public class Arc {
 	}
 
 }
-
