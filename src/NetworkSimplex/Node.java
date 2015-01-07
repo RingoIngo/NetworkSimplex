@@ -15,6 +15,7 @@ public class Node {
 		super();
 		this.index = index;
 		this.demand = demand;
+		this.nettodemand = 0;
 	}
 
 	public int getIndex() {

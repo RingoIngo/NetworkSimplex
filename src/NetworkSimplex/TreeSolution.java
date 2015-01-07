@@ -17,7 +17,7 @@ public class TreeSolution {
 	private ArrayList<Arc2>  U2;
 	
 	private Arc[] Tree; //the arcs in the tree
-	private ArrayList<Arc2> Tree2;
+	private ArrayList<Arc2> Tree2 = new ArrayList<Arc2>();
 
 
 
@@ -31,23 +31,37 @@ public class TreeSolution {
 
 	}
 
-	public TreeSolution(ArrayList<Arc2>  L2, Node[] VPos, Node[] VNeg, int numberOfNodes) {
+	public TreeSolution(ArrayList<Arc2>  L2, Node[] nodes, int numberOfNodes) {
 		this.L2 = L2;
 		int kIndex = numberOfNodes +1;	//index of the artificial node
-		for(Node node : VPos){
-			Arc2 arc = new Arc2(node.getIndex(), kIndex, 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0);	//add artificial arcs (i,k)
-			Tree2.add(arc);
-			this.predecessorArray[node.getIndex()] = kIndex;
-			this.depthArray[node.getIndex()] = 1;
-			this.thread[node.getIndex()] = kIndex;
-		};
 		
-		for(Node node : VNeg){
-			Arc2 arc = new Arc2( kIndex,node.getIndex() , 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0);	//add artificial arcs (k,i)
+		this.predecessorArray = new int[numberOfNodes+2];
+		predecessorArray[numberOfNodes] = -1;
+		
+		this.depthArray = new int[numberOfNodes+2];
+		depthArray[numberOfNodes +1]= 0;
+		
+		this.thread = new int[numberOfNodes +2];
+		thread[numberOfNodes +1] = numberOfNodes; //richtig initialisiert?
+		
+		
+		int startNodeIndex;
+		int endNodeIndex;
+		for(int i = 1; i<nodes.length; i++){ //start at one bcz at index 0 there is no node to keep it easy i.e. nodeIndex = arrayIndex
+			Node node = nodes[i];	//could also be null
+			if(node == null || node.getNettodemand() >= 0) {
+				startNodeIndex = kIndex;
+				endNodeIndex = i;
+			}
+			else {
+				startNodeIndex = i;
+				endNodeIndex = kIndex;
+			}
+			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0);	//add artificial arcs
 			Tree2.add(arc);
-			this.predecessorArray[node.getIndex()] = kIndex;
-			this.depthArray[node.getIndex()] = 1;
-			this.thread[node.getIndex()] = kIndex;
+			this.predecessorArray[i] = kIndex;
+			this.depthArray[i] = 1;
+			this.thread[i] = kIndex;
 		}
 
 	}
