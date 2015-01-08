@@ -73,10 +73,18 @@ public class TreeSolution {
 			this.depthArray[i] = 1;
 			this.thread[i] = kIndex;
 		}
-		LinkedList<Arc2> candidates = findCandidatesForEnteringArc(true, 10);
-		System.out.println("candidates:");
-		System.out.println(candidates);
-
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public boolean iterate(){
+		EnteringArcFinder finder = new EnteringArcFinder();
+		Arc2 enteringArc = finder.getEnteringArc();
+		System.out.println("Arc: ");
+		System.out.println(enteringArc);
+		return false;
 	}
 
 	public void setPredecessorArray(int[] predecessorArray) {
@@ -112,6 +120,68 @@ public class TreeSolution {
 
 	private void updateCReduced(){
 
+	}
+	
+	/**
+	 * this is an inner class, as such it has acces to all class variables and methods of the 
+	 * outer class )even if they are priate)
+	 * it encapsulates the entering arc finding process
+	 * Usage: create and EnteringArcFinder class instance and use the getEnteringArc method
+	 * there are 2 constructors so far, one without arguments that uses a very simple pivoting rule 
+	 * and one with more arguments that uses a more advanced one.
+	 * the second one prob doesnt work so far
+	 * @author IG
+	 *
+	 */
+	private class EnteringArcFinder {
+		//list of candidates, in order  to not search for new arcs in each iteration
+		private LinkedList<Arc2> candidates = new LinkedList<Arc2>();
+		//number of arcs that will be put in the list when it is refreshed
+		private int filledListSize;
+		//numbe of arcs we will choose after the rule of the best merit from the list before it is refreshed
+		private int iterations;
+		//true if there are not enough arcs left to fill the list with the requested number of arcs
+		private boolean noMorecandidates;
+		
+		/**
+		 * this constructor returns an instance of the e-Arc-Finder that uses the simplest
+		 * pivoting rule i.e. return the first discovered arc with CReduced(Arc) < 0
+		 */
+		public EnteringArcFinder(){
+			this.filledListSize = 1;
+			this.iterations =1;
+			this.candidates= findCandidatesForEnteringArc(true, this.filledListSize);
+			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false;
+			
+		}
+		/**
+		 * uses a more advanced pivoting rule, for more details see the grey book
+		 * @param filledListSize the size of the retrieved list
+		 * @param iterations number of arcs that will be chosen from the list
+		 */
+		public EnteringArcFinder(int filledListSize, int iterations) {
+			this.filledListSize = filledListSize;
+			this.iterations = iterations;
+			this.candidates = findCandidatesForEnteringArc(true, this.filledListSize);	//when this class is instantiated it is the first run
+			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false; //if the returned list doesnt contain as many arcs
+			//as we wanted that means that there are not enough candidates anymore to fullfil the request
+		}
+		
+		//there will prob be problems when we run out of arcs
+		/**
+		 * 
+		 * @return the entering arc
+		 */
+		public Arc2 getEnteringArc(){
+			if(noMorecandidates && this.candidates.isEmpty()) return null;
+			if(!noMorecandidates || this.candidates.size() <= this.filledListSize - this.iterations) {
+				this.candidates = findCandidatesForEnteringArc(false, filledListSize);
+				this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false; 
+			}
+			return this.candidates.pop();	//this doesnt give back the ARc with the best merit yet, but will soon
+			//therefore the datastructre LinkedList will prob be exchanged against a treeset
+				
+		}
 	}
 
 	/**
