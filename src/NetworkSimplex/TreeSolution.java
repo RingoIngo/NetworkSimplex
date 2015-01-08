@@ -34,7 +34,16 @@ public class TreeSolution {
 
 
 	}
-
+	
+	/**
+	 * this constructor uses the information that the Reader class connects from the inputfile
+	 * and constructs the inital tree solution
+	 * therefore an artificial node and artificial arcs are constructed
+	 * @param L2
+	 * @param nodes
+	 * @param numberOfNodes
+	 * @param maxCost	that is needed to calculate the costs of the artificial arcs
+	 */
 	public TreeSolution(ArrayList<Arc2>  L2, Node[] nodes, int numberOfNodes, double maxCost) {
 		this.L2 = L2;
 		//		int kIndex = numberOfNodes +1;	//index of the artificial node
@@ -87,17 +96,7 @@ public class TreeSolution {
 		return false;
 	}
 
-	public void setPredecessorArray(int[] predecessorArray) {
-		this.predecessorArray = predecessorArray;
-	}
-
-	public void setDepthArray(int[] depthArray) {
-		this.depthArray = depthArray;
-	}
-
-	public void setThread(int[] thread) {
-		this.thread = thread;
-	}
+	
 
 	/**
 	 * executes one iteration of the algorithm
@@ -120,6 +119,10 @@ public class TreeSolution {
 
 	private void updateCReduced(){
 
+	}
+	
+	private void findPathBetweenUV(){
+		
 	}
 	
 	/**
@@ -210,7 +213,12 @@ public class TreeSolution {
 		return candidates;
 
 	}
-
+	
+	/**
+	 * a small helper method for the string representation of the tree solution
+	 * @param array
+	 * @return
+	 */
 	private String intArrayToString(int[] array){
 		StringBuffer string = new StringBuffer();
 		for(int i = 0; i<array.length; i++) {
@@ -222,7 +230,9 @@ public class TreeSolution {
 		return string.toString();
 	}
 
-
+	/**
+	 * returns a string representation of the tree solution
+	 */
 	public String toString() {
 		StringBuffer string = new StringBuffer("Predecessor Array: ");
 		string.append(intArrayToString(predecessorArray));
