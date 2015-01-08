@@ -22,6 +22,7 @@ public class TreeSolution {
 	private ArrayList<Arc2> Tree2 = new ArrayList<Arc2>();
 
 	//	private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the costs in the nodes
+	// in the script referred to as y
 	private double[] fairPrices;
 
 
@@ -35,7 +36,7 @@ public class TreeSolution {
 
 
 	}
-	
+
 	/**
 	 * this constructor uses the information that the Reader class connects from the inputfile
 	 * and constructs the inital tree solution
@@ -51,7 +52,7 @@ public class TreeSolution {
 		int kIndex = 0;
 		double costArtificialArc = 1 + 0.5 * numberOfNodes* maxCost;	//->skript
 
-		this.predecessorArray = new int[numberOfNodes+1];
+		this.predecessorArray = new int[numberOfNodes+1];                                                                                                                                                                         
 		predecessorArray[kIndex] = -1;
 
 		this.depthArray = new int[numberOfNodes+1];
@@ -65,27 +66,31 @@ public class TreeSolution {
 
 		int startNodeIndex;
 		int endNodeIndex;
+		double flow; //flow is abs(nettodemand)
 		for(int i = 1; i<nodes.length; i++){ //start at one bcz at index 0 there is no node to keep it easy i.e. nodeIndex = arrayIndex
+			flow = 0;
 			Node node = nodes[i];	//could also be null
 			if(node == null || node.getNettodemand() >= 0) {
 				startNodeIndex = kIndex;
 				endNodeIndex = i;
 				fairPrices[i] = costArtificialArc;
+				if(node !=null) flow = Math.abs(node.getNettodemand());
 			}
 			else {
 				startNodeIndex = i;
 				endNodeIndex = kIndex;
 				fairPrices[i] = -costArtificialArc;
+				flow = Math.abs(node.getNettodemand());
 			}
 			//flow has still to be added
-			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, 0);	//add artificial arcs
+			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, flow);	//add artificial arcs
 			Tree2.add(arc);
 			this.predecessorArray[i] = kIndex;
 			this.depthArray[i] = 1;
 			this.thread[i] = kIndex;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -95,12 +100,12 @@ public class TreeSolution {
 		Arc2 enteringArc = finder.getEnteringArc();
 		System.out.println("Arc: ");
 		System.out.println(enteringArc);
-		
+
 		ArrayList<Integer> pathUV = findPathBetweenUV(enteringArc.getStartNodeIndex(), enteringArc.getEndNodeIndex());
 		return false;
 	}
 
-	
+
 
 	/**
 	 * executes one iteration of the algorithm
@@ -116,22 +121,50 @@ public class TreeSolution {
 		return true;
 	}
 
-
-	private void updateY(){
-
+	/**
+	 * 
+	 * @param leavingArc
+	 * @param orientation true if the arc is directed toward the root, false if it is directed away from the root
+	 */
+	private void updateFairPrices(Arc2 leavingArc, Arc2 enteringArc, boolean orientation){
+		double sign = orientation? -1 : 1; 
+		double ce = enteringArc.getReducedCosts();
+		int f1,f2;
+		if(depthArray[leavingArc.getStartNodeIndex()] < depthArray[leavingArc.getEndNodeIndex()]) {
+			f1 = leavingArc.getStartNodeIndex();
+			f2 = leavingArc.getEndNodeIndex();
+		}
+		else {
+			f1 = leavingArc.getEndNodeIndex();
+			f2 = leavingArc.getStartNodeIndex();
+		}
+		assert depthArray[f2] == depthArray[f1] +1 : "initializing of f1 and f2 in updateFairPrices is wrong";
+		//change the above!!!
+		int k = f2;
+		while(depthArray[k] > depthArray[f2]) {
+			fairPrices[k] = fairPrices[k] + sign * ce;
+			k = thread[k];
+		}
 	}
 
 	private void updateCReduced(){
 
 	}
-	
+
+	/**
+	 * this method finds a path between the nodes with indexU and indexV
+	 * it is used to find the cycle in the tree after adding the entering arc
+	 * @param indexU
+	 * @param indexV
+	 * @return a list that contains the path
+	 */
 	private ArrayList<Integer> findPathBetweenUV(int indexU, int indexV){
-		
+
 		//maybe use another datastructure here, like a stack or so
 		ArrayList<Integer> pathU = new ArrayList<Integer>();
-//		ArrayList<Integer> pathV = new ArrayList<Integer>();
+		//		ArrayList<Integer> pathV = new ArrayList<Integer>();
 		Stack<Integer> pathV = new Stack<Integer>();
-		
+
 		//initialize so that u is the index with the greater depth
 		int u,v;
 		if(depthArray[indexU] >= depthArray[indexV]) {
@@ -140,13 +173,13 @@ public class TreeSolution {
 		else {
 			u = indexV ; v= indexU;
 		}
-		
+
 		//climb up the longer path until level of v is reached
 		while(depthArray[u] > depthArray[v]){
 			pathU.add(u);
 			u = predecessorArray[u];
 		}
-		
+
 		//climb up on both paths until join is reached
 		while(u != v) {
 			pathU.add(u);
@@ -154,15 +187,15 @@ public class TreeSolution {
 			u = predecessorArray[u];
 			v = predecessorArray[v];
 		}
-//		pathV.pop(); //remove last element v = u
+		//		pathV.pop(); //remove last element v = u
 		pathU.add(u);
 		pathU.addAll(pathV);
 		System.out.println("path between u and v: ");
 		System.out.println(pathU);
 		return pathU;
-		
+
 	}
-	
+
 	/**
 	 * this is an inner class, as such it has access to all class variables and methods of the 
 	 * outer class )even if they are private)
@@ -183,7 +216,7 @@ public class TreeSolution {
 		private int iterations;
 		//true if there are not enough arcs left to fill the list with the requested number of arcs
 		private boolean noMorecandidates;
-		
+
 		/**
 		 * this constructor returns an instance of the e-Arc-Finder that uses the simplest
 		 * pivoting rule i.e. return the first discovered arc with CReduced(Arc) < 0
@@ -193,7 +226,7 @@ public class TreeSolution {
 			this.iterations =1;
 			this.candidates= findCandidatesForEnteringArc(true, this.filledListSize);
 			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false;
-			
+
 		}
 		/**
 		 * uses a more advanced pivoting rule, for more details see the grey book
@@ -207,7 +240,7 @@ public class TreeSolution {
 			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false; //if the returned list doesnt contain as many arcs
 			//as we wanted that means that there are not enough candidates anymore to fullfil the request
 		}
-		
+
 		//there will prob be problems when we run out of arcs
 		/**
 		 * 
@@ -221,7 +254,7 @@ public class TreeSolution {
 			}
 			return this.candidates.pop();	//this doesnt give back the ARc with the best merit yet, but will soon
 			//therefore the datastructre LinkedList will prob be exchanged against a treeset
-				
+
 		}
 	}
 
@@ -238,6 +271,9 @@ public class TreeSolution {
 			int startnode;
 			int endnode;
 			if(firstRun) {
+				/**
+				 * reduced costs are initialized here
+				 */
 				startnode = arc.getStartNodeIndex();
 				endnode = arc.getEndNodeIndex();
 				arc.setReducedCosts(arc.getCost() + fairPrices[startnode] - fairPrices[endnode]);
@@ -251,7 +287,7 @@ public class TreeSolution {
 		return candidates;
 
 	}
-	
+
 	/**
 	 * a small helper method for the string representation of the tree solution
 	 * @param array
@@ -260,7 +296,7 @@ public class TreeSolution {
 	private String intArrayToString(int[] array){
 		StringBuffer string = new StringBuffer();
 		for(int i = 0; i<array.length; i++) {
-			string.append(" ");
+			string.append("\n");
 			string.append(i);
 			string.append(": ");
 			string.append(array[i]);
