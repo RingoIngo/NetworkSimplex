@@ -2,6 +2,7 @@ package NetworkSimplex;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class TreeSolution {
 
@@ -76,6 +77,7 @@ public class TreeSolution {
 				endNodeIndex = kIndex;
 				fairPrices[i] = -costArtificialArc;
 			}
+			//flow has still to be added
 			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, 0);	//add artificial arcs
 			Tree2.add(arc);
 			this.predecessorArray[i] = kIndex;
@@ -93,6 +95,8 @@ public class TreeSolution {
 		Arc2 enteringArc = finder.getEnteringArc();
 		System.out.println("Arc: ");
 		System.out.println(enteringArc);
+		
+		ArrayList<Integer> pathUV = findPathBetweenUV(enteringArc.getStartNodeIndex(), enteringArc.getEndNodeIndex());
 		return false;
 	}
 
@@ -121,13 +125,47 @@ public class TreeSolution {
 
 	}
 	
-	private void findPathBetweenUV(){
+	private ArrayList<Integer> findPathBetweenUV(int indexU, int indexV){
+		
+		//maybe use another datastructure here, like a stack or so
+		ArrayList<Integer> pathU = new ArrayList<Integer>();
+//		ArrayList<Integer> pathV = new ArrayList<Integer>();
+		Stack<Integer> pathV = new Stack<Integer>();
+		
+		//initialize so that u is the index with the greater depth
+		int u,v;
+		if(depthArray[indexU] >= depthArray[indexV]) {
+			u = indexU; v = indexV;
+		}
+		else {
+			u = indexV ; v= indexU;
+		}
+		
+		//climb up the longer path until level of v is reached
+		while(depthArray[u] > depthArray[v]){
+			pathU.add(u);
+			u = predecessorArray[u];
+		}
+		
+		//climb up on both paths until join is reached
+		while(u != v) {
+			pathU.add(u);
+			pathV.add(v);
+			u = predecessorArray[u];
+			v = predecessorArray[v];
+		}
+//		pathV.pop(); //remove last element v = u
+		pathU.add(u);
+		pathU.addAll(pathV);
+		System.out.println("path between u and v: ");
+		System.out.println(pathU);
+		return pathU;
 		
 	}
 	
 	/**
-	 * this is an inner class, as such it has acces to all class variables and methods of the 
-	 * outer class )even if they are priate)
+	 * this is an inner class, as such it has access to all class variables and methods of the 
+	 * outer class )even if they are private)
 	 * it encapsulates the entering arc finding process
 	 * Usage: create and EnteringArcFinder class instance and use the getEnteringArc method
 	 * there are 2 constructors so far, one without arguments that uses a very simple pivoting rule 
