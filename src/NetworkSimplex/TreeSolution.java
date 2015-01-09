@@ -73,13 +73,13 @@ public class TreeSolution {
 			if(node == null || node.getNettodemand() >= 0) {
 				startNodeIndex = kIndex;
 				endNodeIndex = i;
-				fairPrices[i] = costArtificialArc;
+				fairPrices[i] = costArtificialArc;	// initial fair prices 
 				if(node !=null) flow = Math.abs(node.getNettodemand());
 			}
 			else {
 				startNodeIndex = i;
 				endNodeIndex = kIndex;
-				fairPrices[i] = -costArtificialArc;
+				fairPrices[i] = -costArtificialArc; // initial fair prices
 				flow = Math.abs(node.getNettodemand());
 			}
 			//flow has still to be added
@@ -115,7 +115,7 @@ public class TreeSolution {
 	public boolean updateTreeSolution(){
 		//...
 
-		this.updateY();
+		this.updateFairPrices();
 		this.updateCReduced();
 		//..
 		return true;
