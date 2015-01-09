@@ -115,7 +115,6 @@ public class TreeSolution {
 	public boolean updateTreeSolution(){
 		//...
 
-		this.updateY();
 		this.updateCReduced();
 		//..
 		return true;
