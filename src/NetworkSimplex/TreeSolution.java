@@ -59,7 +59,7 @@ public class TreeSolution {
 		depthArray[kIndex]= 0;
 
 		this.thread = new int[numberOfNodes +1];
-		thread[kIndex] = numberOfNodes; //richtig initialisiert?
+		thread[kIndex] = 1; //richtig initialisiert?
 
 		this.fairPrices = new double[numberOfNodes+1];
 		fairPrices[kIndex] = 0; //this is the one that choose arbritrariliy (n variables, n-1 equations)
@@ -87,7 +87,13 @@ public class TreeSolution {
 			Tree2.add(arc);
 			this.predecessorArray[i] = kIndex;
 			this.depthArray[i] = 1;
-			this.thread[i] = kIndex;
+			/**
+			 * initialization of thread
+			 */
+			if(i<numberOfNodes)
+				this.thread[i] = i+1;	//nodes are traversed in index order
+			else 
+				this.thread[i] = 0;	//successor of the last node is the root
 		}
 	}
 
@@ -327,7 +333,7 @@ public class TreeSolution {
 
 		return string.toString();
 	}
-	
+
 	/**
 	 * method to create a String for visualize the graph by highlighting T, L, U
 	 * @return String for graphviz
@@ -335,7 +341,7 @@ public class TreeSolution {
 	public String graphvizString(){
 		return null;
 	}
-	
+
 	/**
 	 * method to create a String for visualize the entering and leaving arc
 	 * @return String for graphviz
