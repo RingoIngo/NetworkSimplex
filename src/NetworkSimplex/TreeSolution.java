@@ -327,5 +327,21 @@ public class TreeSolution {
 
 		return string.toString();
 	}
+	
+	/**
+	 * method to create a String for visualize the graph by highlighting T, L, U
+	 * @return String for graphviz
+	 */
+	public String graphvizString(){
+		return null;
+	}
+	
+	/**
+	 * method to create a String for visualize the entering and leaving arc
+	 * @return String for graphviz
+	 */
+	public String graphvizString2(){
+		return null;
+	}
 
 }
