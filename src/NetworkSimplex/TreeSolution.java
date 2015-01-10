@@ -421,14 +421,16 @@ public class TreeSolution {
 			string.append("->"); // write the arcs like " 1->2 "...it means that
 									// there is an arc from 1 to 2
 			string.append(endIndex);
-			string.append(" [ label = \"["); //
-			string.append(arc.getLowerLimit()); //
-			string.append(" / "); //
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
 			string.append(arc.getFlow()); // write the current flow to the arc
 											// like " 1->2 [ label = [l/x/u] ];
-			string.append(" / "); //
-			string.append(arc.getUpperLimit()); //
-			string.append(" ]\" ]; \n"); //
+			string.append(" / "); 
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
 		}
 		string.append("} \n \n");
 
@@ -468,14 +470,16 @@ public class TreeSolution {
 			string.append("->"); // write the arcs like " 1->2 "...it means that
 									// there is an arc from 1 to 2
 			string.append(endIndex);
-			string.append(" [ label = \"["); //
-			string.append(arc.getLowerLimit()); //
-			string.append(" / "); //
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
 			string.append(arc.getFlow()); // write the current flow to the arc
 											// like " 1->2 [ label = [l/x/u] ];
-			string.append(" / "); //
-			string.append(arc.getUpperLimit()); //
-			string.append(" ]\" ]; \n"); //
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
 		}
 
 		// write all arcs of L. They will be yellow
@@ -487,14 +491,16 @@ public class TreeSolution {
 			string.append("->"); // write the arcs like " 1->2 "...it means that
 									// there is an arc from 1 to 2
 			string.append(endIndex);
-			string.append(" [color=yellow, label = \"["); //
-			string.append(arc.getLowerLimit()); //
-			string.append(" / "); //
+			string.append(" [color=yellow, label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
 			string.append(arc.getFlow()); // write the current flow to the arc
 											// like " 1->2 [ label = [l/x/u] ];
-			string.append(" / "); //
-			string.append(arc.getUpperLimit()); //
-			string.append(" ]\" ]; \n"); //
+			string.append(" / ");
+			string.append(arc.getUpperLimit()); 
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
 		}
 
 		// write all arcs of U. They will be red
@@ -506,14 +512,16 @@ public class TreeSolution {
 		// string.append("->"); // write the arcs like " 1->2 "...it means that
 		// // there is an arc from 1 to 2
 		// string.append(endIndex);
-		// string.append(" [color=blue, label = \"["); //
-		// string.append(arc.getLowerLimit()); //
-		// string.append(" / "); //
+		// string.append(" [color=blue, label = \"["); 
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
 		// string.append(arc.getFlow()); // write the current flow to the arc
 		// // like " 1->2 [ label = [l/x/u] ];
-		// string.append(" / "); //
-		// string.append(arc.getUpperLimit()); //
-		// string.append(" ]\" ]; \n"); //
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost());	
+		// string.append(" ]\" ]; \n");
 		// }
 		string.append("} \n \n");
 
@@ -557,15 +565,17 @@ public class TreeSolution {
 			if (arc.equals(enteringArc)) {
 				string.append(" [color=green, label = \"[");
 			}else {
-				string.append(" [ label = \"["); //
+				string.append(" [ label = \"[");
 			}
-			string.append(arc.getLowerLimit()); //
-			string.append(" / "); //
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
 			string.append(arc.getFlow()); // write the current flow to the arc
 											// like " 1->2 [ label = [l/x/u] ];
-			string.append(" / "); //
-			string.append(arc.getUpperLimit()); //
-			string.append(" ]\" ]; \n"); //
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
 		}
 
 		// write all arcs of L. They will be yellow
@@ -582,13 +592,15 @@ public class TreeSolution {
 			}else {
 				string.append(" [color=yellow, label = \"["); //
 			}
-			string.append(arc.getLowerLimit()); //
-			string.append(" / "); //
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
 			string.append(arc.getFlow()); // write the current flow to the arc
-											// like " 1->2 [ label = [l/x/u] ];
-			string.append(" / "); //
-			string.append(arc.getUpperLimit()); //
-			string.append(" ]\" ]; \n"); //
+											// like " 1->2 [ label = [l/x/u/c] ];
+			string.append(" / "); 
+			string.append(arc.getUpperLimit()); 
+			string.append(" / ");
+			string.append(arc.getCost());		
+			string.append(" ]\" ]; \n");
 		}
 
 		// write all arcs of U. They will be red
@@ -603,15 +615,17 @@ public class TreeSolution {
 		// if (arc.equals(enteringArc)) {
 		// 		string.append(" [color=green, label = \"[");
 		// } else {
-		// 		string.append(" [color=blue, label = \"["); //
+		// 		string.append(" [color=blue, label = \"[");
 		// }
-		// string.append(arc.getLowerLimit()); //
-		// string.append(" / "); //
-		// string.append(arc.getFlow()); // write the current flow to the arc
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
+		// string.append(arc.getFlow()); 
 		// // like " 1->2 [ label = [l/x/u] ];
-		// string.append(" / "); //
-		// string.append(arc.getUpperLimit()); //
-		// string.append(" ]\" ]; \n"); //
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost();
+		// string.append(" ]\" ]; \n");
 		// }
 		string.append("} \n \n");
 
