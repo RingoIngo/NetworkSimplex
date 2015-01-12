@@ -26,9 +26,7 @@ public class Reader {
 
 		ArrayList<Node> VPos = new ArrayList<Node>();
 		ArrayList<Node> VNeg = new ArrayList<Node>();
-		ArrayList<Arc> L = new ArrayList<Arc>();
-		ArrayList<Arc2> L2 = new ArrayList<Arc2>();
-//		LinkedList<Arc2> L2 = new LinkedList<Arc2>();
+		AdjacencyList L2 = null;
 		int numberOfNodes= -1;
 		int numberOfArcs;
 		double maxCost = 0; // need that for the costs of the artificial arcs
@@ -41,6 +39,7 @@ public class Reader {
 				numberOfArcs = Integer.parseInt(arr[3]);
 				//init node array
 				nodes = new Node[numberOfNodes+1];
+				L2 = new AdjacencyList(numberOfNodes+1);
 			}
 
 			else if (line.charAt(0) == 'n') { //node description
@@ -69,7 +68,7 @@ public class Reader {
 
 							
 				//add arc to L partition
-				L2.add(arc); //and this seems to be also quite time consuming
+				L2.addEdge(startNodeIndex, arc); //and this seems to be also quite time consuming
 				
 				
 				if(arc.getLowerLimit() > 0){		//this code snippet takes A LOT OF TIME!!!
