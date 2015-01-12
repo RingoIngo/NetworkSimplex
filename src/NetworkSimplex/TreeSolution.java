@@ -22,7 +22,8 @@ public class TreeSolution {
 //	private Arc[] Tree; //the arcs in the tree
 	private ArrayList<Arc2> Tree2 = new ArrayList<Arc2>();
 
-	//	private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the costs in the nodes
+	// private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the
+	// costs in the nodes
 	// in the script referred to as y
 	private double[] fairPrices;
 
@@ -62,7 +63,8 @@ public class TreeSolution {
 		thread[kIndex] = 1; //richtig initialisiert?
 
 		this.fairPrices = new double[numberOfNodes+1];
-		fairPrices[kIndex] = 0; //this is the one that choose arbritrariliy (n variables, n-1 equations)
+		fairPrices[kIndex] = 0; // this is the one that choose arbritrariliy (n
+								// variables, n-1 equations)
 
 		int startNodeIndex;
 		int endNodeIndex;
@@ -95,6 +97,8 @@ public class TreeSolution {
 			else 
 				this.thread[i] = 0;	//successor of the last node is the root
 		}
+		System.out.print(this.graphvizStringTree());
+		System.out.print(this.graphvizStringTLU());
 	}
 
 	/**
@@ -374,19 +378,246 @@ public class TreeSolution {
 	}
 
 	/**
-	 * method to create a String for visualize the graph by highlighting T, L, U
+	 * method to create a String for visualize the Treesolution arc description:
+	 * [l / x / u] with l = lower limit, x = current flow, u = upper limit
+	 * 
 	 * @return String for graphviz
 	 */
-	public String graphvizString(){
-		return null;
+	public String graphvizStringTree() {
+		StringBuffer string = new StringBuffer(
+				"\n Treesolution String for GRAPHVIZ: \n	\n digraph Treesolution { \n	node [shape = circle]; ");
+		int lastIndexNodes = this.thread.length - 1;
+		int lastIndexArcs = Tree2.size();
+		Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index...just in case that thread[]
+		// contains every node once)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree
+		for (int i = lastIndexArcs - 1; i >= 0; i--) {
+			arc = Tree2.get(i);
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+									// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+											// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / "); 
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
+		}
+		string.append("} \n \n");
+
+		return string.toString();
 	}
 
 	/**
-	 * method to create a String for visualize the entering and leaving arc
+	 * method to create a String for visualize the data structure T,L,U
+	 * The arcs of T will be black, the arcs of L will be yellow and the arcs of U will be blue
 	 * @return String for graphviz
 	 */
-	public String graphvizString2(){
-		return null;
+	public String graphvizStringTLU() {
+		StringBuffer string = new StringBuffer(
+				"\n T,L,U String for GRAPHVIZ: \n	\n digraph TLU { \n	node [shape = circle]; ");
+		int lastIndexNodes = this.thread.length - 1;
+		int lastIndexArcsT = Tree2.size();
+		int lastIndexArcsL = L2.size();
+		// int lastIndexArcsU = U2.size();
+		Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index...just in case that thread[]
+		// contains every node once)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree. They will be black.
+		for (int i = lastIndexArcsT - 1; i >= 0; i--) {
+			arc = Tree2.get(i);
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+									// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+											// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of L. They will be yellow
+		for (int i = lastIndexArcsL - 1; i >= 0; i--) {
+			arc = L2.get(i);
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+									// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [color=yellow, label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+											// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit()); 
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of U. They will be red
+		// for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		// arc = U2.get(i);
+		// startIndex = arc.getStartNodeIndex();
+		// endIndex = arc.getEndNodeIndex();
+		// string.append(startIndex);
+		// string.append("->"); // write the arcs like " 1->2 "...it means that
+		// // there is an arc from 1 to 2
+		// string.append(endIndex);
+		// string.append(" [color=blue, label = \"["); 
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
+		// string.append(arc.getFlow()); // write the current flow to the arc
+		// // like " 1->2 [ label = [l/x/u] ];
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost());	
+		// string.append(" ]\" ]; \n");
+		// }
+		string.append("} \n \n");
+
+		return string.toString();
+	}
+
+	/**
+	 * method to create a String for visualize the datastructure by highlighting
+	 * the entering arc. The entering arc will be green.
+	 * 
+	 * @return String for graphviz
+	 */
+	public String graphvizStringArcs(Arc2 enteringArc) {
+		StringBuffer string = new StringBuffer(
+				"\n Entering Arc String for GRAPHVIZ: \n	\n digraph enteringArc { \n	node [shape = circle]; ");
+		int lastIndexNodes = this.thread.length - 1;
+		int lastIndexArcsT = Tree2.size();
+		int lastIndexArcsL = L2.size();
+		// int lastIndexArcsU = U2.size();
+		Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index...just in case that thread[]
+		// contains every node once)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree. They will be black.
+		for (int i = lastIndexArcsT - 1; i >= 0; i--) {
+			arc = Tree2.get(i);
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+									// there is an arc from 1 to 2
+			string.append(endIndex);
+			if (arc.equals(enteringArc)) {
+				string.append(" [color=green, label = \"[");
+			}else {
+				string.append(" [ label = \"[");
+			}
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+											// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());	
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of L. They will be yellow
+		for (int i = lastIndexArcsL - 1; i >= 0; i--) {
+			arc = L2.get(i);
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+									// there is an arc from 1 to 2
+			string.append(endIndex);
+			if (arc.equals(enteringArc)) {
+				string.append(" [color=green, label = \"[");
+			}else {
+				string.append(" [color=yellow, label = \"["); //
+			}
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+											// like " 1->2 [ label = [l/x/u/c] ];
+			string.append(" / "); 
+			string.append(arc.getUpperLimit()); 
+			string.append(" / ");
+			string.append(arc.getCost());		
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of U. They will be red
+		// for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		// arc = U2.get(i);
+		// startIndex = arc.getStartNodeIndex();
+		// endIndex = arc.getEndNodeIndex();
+		// string.append(startIndex);
+		// string.append("->"); // write the arcs like " 1->2 "...it means that
+		// // there is an arc from 1 to 2
+		// string.append(endIndex);
+		// if (arc.equals(enteringArc)) {
+		// 		string.append(" [color=green, label = \"[");
+		// } else {
+		// 		string.append(" [color=blue, label = \"[");
+		// }
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
+		// string.append(arc.getFlow()); 
+		// // like " 1->2 [ label = [l/x/u] ];
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost();
+		// string.append(" ]\" ]; \n");
+		// }
+		string.append("} \n \n");
+
+		return string.toString();
 	}
 
 }
