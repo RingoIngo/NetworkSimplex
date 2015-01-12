@@ -2,6 +2,7 @@ package NetworkSimplex;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Stack;
 
 public class TreeSolution {
@@ -12,13 +13,13 @@ public class TreeSolution {
 
 	private int[] thread; //corresponds to the preorder array from the tutorial
 
-	private Arc[] L; //the partition where flow equals lower cap
+//	private Arc[] L; //the partition where flow equals lower cap
 	private ArrayList<Arc2>  L2; //not sure yet which arc type we will use 
 
-	private Arc[] U; //the partition where flow equals upper cap
+//	private Arc[] U; //the partition where flow equals upper cap
 	private ArrayList<Arc2>  U2;
 
-	private Arc[] Tree; //the arcs in the tree
+//	private Arc[] Tree; //the arcs in the tree
 	private ArrayList<Arc2> Tree2 = new ArrayList<Arc2>();
 
 	//	private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the costs in the nodes
@@ -27,15 +28,13 @@ public class TreeSolution {
 
 
 
-	//the onstructor will only be used once in the Reader class to construct an intial feasable tree solution
-	public TreeSolution(Arc[] L, Node[] VPos, Node[] VNeg[]) {
-		this.L = L;
-		for(Node node : VPos){
-
-		}
-
-
-	}
+//	//the onstructor will only be used once in the Reader class to construct an intial feasable tree solution
+//	public TreeSolution(Arc[] L, Node[] VPos, Node[] VNeg[]) {
+//		this.L = L;
+//		for(Node node : VPos){
+//
+//		}
+//	}
 
 	/**
 	 * this constructor uses the information that the Reader class connects from the inputfile
@@ -48,6 +47,7 @@ public class TreeSolution {
 	 */
 	public TreeSolution(ArrayList<Arc2>  L2, Node[] nodes, int numberOfNodes, double maxCost) {
 		this.L2 = L2;
+		this.U2 = new ArrayList<Arc2>(); //U partition is empty at the beginning
 		//		int kIndex = numberOfNodes +1;	//index of the artificial node
 		int kIndex = 0;
 		double costArtificialArc = 1 + 0.5 * numberOfNodes* maxCost;	//->skript
@@ -102,10 +102,15 @@ public class TreeSolution {
 	 * 
 	 */
 	public boolean iterate(){
-		EnteringArcFinder finder = new EnteringArcFinder();
-		Arc2 enteringArc = finder.getEnteringArc();
-		System.out.println("Arc: ");
+		EnteringArcFinderCandidatesPivotRule finderPivotRule = new EnteringArcFinderCandidatesPivotRule();
+		Arc2 enteringArc = finderPivotRule.getEnteringArc();
+		System.out.println("Arc (found by pivot rule class): ");
 		System.out.println(enteringArc);
+		
+		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
+		Arc2 enteringArc2 = finderFirstRule.getEnteringArc();
+		System.out.println("Arc (found by first rule class: )");
+		System.out.println(enteringArc2);
 
 		ArrayList<Integer> pathUV = findPathBetweenUV(enteringArc.getStartNodeIndex(), enteringArc.getEndNodeIndex());
 		return false;
@@ -214,7 +219,7 @@ public class TreeSolution {
 	 * @author IG
 	 *
 	 */
-	private class EnteringArcFinder {
+	private class EnteringArcFinderCandidatesPivotRule {
 		//list of candidates, in order  to not search for new arcs in each iteration
 		private LinkedList<Arc2> candidates = new LinkedList<Arc2>();
 		//number of arcs that will be put in the list when it is refreshed
@@ -228,7 +233,7 @@ public class TreeSolution {
 		 * this constructor returns an instance of the e-Arc-Finder that uses the simplest
 		 * pivoting rule i.e. return the first discovered arc with CReduced(Arc) < 0
 		 */
-		public EnteringArcFinder(){
+		public EnteringArcFinderCandidatesPivotRule(){
 			this.filledListSize = 1;
 			this.iterations =1;
 			this.candidates= findCandidatesForEnteringArc(true, this.filledListSize);
@@ -240,7 +245,7 @@ public class TreeSolution {
 		 * @param filledListSize the size of the retrieved list
 		 * @param iterations number of arcs that will be chosen from the list
 		 */
-		public EnteringArcFinder(int filledListSize, int iterations) {
+		public EnteringArcFinderCandidatesPivotRule(int filledListSize, int iterations) {
 			this.filledListSize = filledListSize;
 			this.iterations = iterations;
 			this.candidates = findCandidatesForEnteringArc(true, this.filledListSize);	//when this class is instantiated it is the first run
@@ -259,12 +264,46 @@ public class TreeSolution {
 				this.candidates = findCandidatesForEnteringArc(false, filledListSize);
 				this.noMorecandidates = this.candidates.size() < this.filledListSize ? true : false; 
 			}
+			/**
+			 * here we have to find the max value and at the same time aupdate the list
+			 * bcz there might be candidates in the list that do not reduce the costs anymore
+			 * due to updates in previous iterations
+			 */
 			return this.candidates.pop();	//this doesnt give back the ARc with the best merit yet, but will soon
 			//therefore the datastructre LinkedList will prob be exchanged against a treeset
 
 		}
 	}
-
+	/**
+	 * inner class that implements the pivoting rule that return the first arc that could be used
+	 * its not completely implemented yet.
+	 * maybe this class will also provide methods to delete and add arcs to L and U in order to update them
+	 * @author IG
+	 *
+	 */
+	private class EnteringArcFinderFirstRule {
+		
+		private ListIterator<Arc2> LIterator;
+		private ListIterator<Arc2> UIterator;
+		
+		public EnteringArcFinderFirstRule() {
+			this.LIterator = L2.listIterator();
+			this.UIterator = U2.listIterator();
+		}
+		
+		private Arc2 getEnteringArc() {
+			while(LIterator.hasNext()){
+				if(LIterator.next().getReducedCosts() < 0)
+					return LIterator.next();
+			}
+			while(UIterator.hasNext()){
+				if(UIterator.next().getReducedCosts() > 0)
+					return UIterator.next();
+			}
+			
+			return null;
+		}
+	}
 	/**
 	 * 
 	 * @param firstRun
