@@ -197,7 +197,7 @@ public class TreeSolution {
 
 	private void updateThread(Arc2 enteringArc, Arc2 leavingArc) {
 
-		int e1, e2, f1, f2, a, b, i, j, k, r;
+		int node, e1, e2, f1, f2, a, b, i, j, k, r;
 
 		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
 		// (that would be the case when d(f2) > d(f1) )
@@ -211,9 +211,17 @@ public class TreeSolution {
 		}
 
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
-		// WE HAVE TO ASSIGN THEM CORRECTLY
-		e1 = enteringArc.getStartNodeIndex();
-		e2 = enteringArc.getEndNodeIndex();
+		node=enteringArc.getStartNodeIndex();;	//check if the startnode is in S
+		while((node != f2) && (node != -1)){	// if node is in S then there is a path from node to f2 on the way from e to the root
+			node = this.predecessorArray[node];
+		}
+		if (node == f2){
+			e2 = enteringArc.getStartNodeIndex();
+			e1 = enteringArc.getEndNodeIndex();
+		} else {
+			e1 = enteringArc.getStartNodeIndex();
+			e2 = enteringArc.getEndNodeIndex();
+		}
 
 		// 1. initialize
 		a = f1;
