@@ -251,7 +251,7 @@ public class TreeSolution {
 			// 4. climb up one step the pivot stem and update thread[k]
 			j = i;
 			i = this.predecessorArray[i];
-			this.predecessorArray[i] = j;		// update (i.e. swap) the predecessors
+			this.predecessorArray[i] = j;		// update (swap) the predecessors
 			this.thread[k] = i;
 
 			// 5. find the last node k in the left part of S_t
