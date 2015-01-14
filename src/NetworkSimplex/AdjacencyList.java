@@ -4,25 +4,25 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-public class AdjacencyList implements Iterable<Arc2> {
+public class AdjacencyList implements Iterable<Arc> {
 
-	private LinkedList<Arc2>[] adjList;
+	private LinkedList<Arc>[] adjList;
 	
 	
 	public AdjacencyList(int numberOfNodes) {
 		this.adjList = new LinkedList[numberOfNodes];
 		for(int i =0; i<numberOfNodes; i++){
-			this.adjList[i] = new LinkedList<Arc2>();
+			this.adjList[i] = new LinkedList<Arc>();
 		}
 	}
 	
-	public void addEdge(Arc2 edge){
+	public void addEdge(Arc edge){
 		int startNodeIndex = edge.getStartNodeIndex();
 		this.adjList[startNodeIndex].add(edge);
 	}
 	
 	public boolean removeEdge(int startNodeIndex, int endNodeIndex){
-		Iterator<Arc2> iterator = this.adjList[startNodeIndex].iterator();
+		Iterator<Arc> iterator = this.adjList[startNodeIndex].iterator();
 		while(iterator.hasNext()){
 			if(iterator.next().getEndNodeIndex() == endNodeIndex){
 				iterator.remove();
@@ -32,14 +32,14 @@ public class AdjacencyList implements Iterable<Arc2> {
 		return false;
 	}
 	
-	public boolean removeEdge(Arc2 edge){
+	public boolean removeEdge(Arc edge){
 		return removeEdge(edge.getStartNodeIndex(),edge.getEndNodeIndex());
 	}
 	
 	
-	public Arc2 getEdge(int startNodeIndex, int endNodeIndex) {
-		Iterator<Arc2> iterator = this.adjList[startNodeIndex].iterator();
-		Arc2 arc;
+	public Arc getEdge(int startNodeIndex, int endNodeIndex) {
+		Iterator<Arc> iterator = this.adjList[startNodeIndex].iterator();
+		Arc arc;
 		while(iterator.hasNext()){
 			arc = iterator.next();
 			if(arc.getEndNodeIndex() == endNodeIndex){
@@ -59,13 +59,13 @@ public class AdjacencyList implements Iterable<Arc2> {
 	 * @param nodeIndex2
 	 * @return
 	 */
-	public Arc2 getEdgeInTree(int nodeIndex1, int nodeIndex2){
-			Arc2 arc = this.getEdge(nodeIndex1, nodeIndex2);
+	public Arc getEdgeInTree(int nodeIndex1, int nodeIndex2){
+			Arc arc = this.getEdge(nodeIndex1, nodeIndex2);
 			if( arc!=null) return arc;
 			else return this.getEdge(nodeIndex2, nodeIndex1);
 	}
 	
-	public Iterator<Arc2> iterator() {
+	public Iterator<Arc> iterator() {
 		AdjListIterator iterator= new AdjListIterator();
 		iterator.setData(this.adjList);
 		return iterator;

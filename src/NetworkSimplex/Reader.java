@@ -63,7 +63,7 @@ public class Reader {
 				//set flow to lower capacity
 				int startNodeIndex = Integer.parseInt(arr[1]);
 				int endNodeIndex = Integer.parseInt(arr[2]);
-				Arc2 arc = new Arc2(startNodeIndex,endNodeIndex, arrDouble[0] ,upperCapacity, arrDouble[2], arrDouble[0]);
+				Arc arc = new Arc(startNodeIndex,endNodeIndex, arrDouble[0] ,upperCapacity, arrDouble[2], arrDouble[0]);
 				//Arc arc = new Arc(Integer.parseInt(arr[1]),Integer.parseInt(arr[2]),arrDouble[0] ,arrDouble[1], arrDouble[2], arrDouble[0]);
 
 							

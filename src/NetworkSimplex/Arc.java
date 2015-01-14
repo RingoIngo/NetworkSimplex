@@ -1,6 +1,6 @@
 package NetworkSimplex;
 
-public class Arc2 {
+public class Arc {
 	
 	private int startNodeIndex;
 	private int endNodeIndex;
@@ -11,7 +11,7 @@ public class Arc2 {
 	private double flow;
 	
 	
-	public Arc2(int startNodeIndex, int endNodeIndex, double lowerLimit,
+	public Arc(int startNodeIndex, int endNodeIndex, double lowerLimit,
 			double upperLimit, double cost, double flow) {
 		super();
 		this.startNodeIndex = startNodeIndex;

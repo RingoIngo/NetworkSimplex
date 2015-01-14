@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-public class AdjListIterator implements Iterator<Arc2> {
+public class AdjListIterator implements Iterator<Arc> {
 	
-	private  LinkedList<Arc2>[] adjListArray;
+	private  LinkedList<Arc>[] adjListArray;
 	private int nodeIndex;
-	private Iterator<Arc2> iterator;
+	private Iterator<Arc> iterator;
 
-	public void setData(LinkedList<Arc2>[] adjListArray){
+	public void setData(LinkedList<Arc>[] adjListArray){
 		this.adjListArray = adjListArray;
 		nodeIndex = 0;
 		iterator = this.adjListArray[this.nodeIndex].iterator();
@@ -33,11 +33,11 @@ public class AdjListIterator implements Iterator<Arc2> {
 	}
 
 	@Override
-	public Arc2 next() throws NoSuchElementException {
+	public Arc next() throws NoSuchElementException {
 		if (!hasNext()) {
 		      throw new NoSuchElementException("No more elements");
 		    }
-		Arc2 arc = iterator.next();
+		Arc arc = iterator.next();
 		//
 		if(!iterator.hasNext()){
 			if(++this.nodeIndex < adjListArray.length)

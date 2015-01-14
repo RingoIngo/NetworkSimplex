@@ -9,22 +9,22 @@ package NetworkSimplex;
  */
 public class EnteringArcObject {
 	
-	private Arc2 enteringArc;
+	private Arc enteringArc;
 	private boolean L;
 	private boolean U;
 	
 	
 	
-	public EnteringArcObject(Arc2 enteringArc, boolean l, boolean u) {
+	public EnteringArcObject(Arc enteringArc, boolean l, boolean u) {
 		this.enteringArc = enteringArc;
 		L = l;
 		U = u;
 	}
 	
-	public Arc2 getEnteringArc() {
+	public Arc getEnteringArc() {
 		return enteringArc;
 	}
-	public void setEnteringArc(Arc2 enteringArc) {
+	public void setEnteringArc(Arc enteringArc) {
 		this.enteringArc = enteringArc;
 	}
 	public boolean isL() {

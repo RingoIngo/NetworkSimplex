@@ -16,14 +16,14 @@ public class TreeSolution {
 	private int[] thread; // corresponds to the preorder array from the tutorial
 
 	// the partition where flow equals lower cap
-	private AdjacencyList L2; // not sure yet which arc type we will use
+	private AdjacencyList L; // not sure yet which arc type we will use
 
 	// /the partition where flow equals upper cap
-	private AdjacencyList U2;
+	private AdjacencyList U;
 
 	// will prob get deleted soon and replaced by some array that store flow,cap
 	// and so on;
-	private AdjacencyList Tree2;
+	private AdjacencyList Tree;
 
 	// private ArrayList<Double> fairPrices = new ArrayList<Double>(); //the
 	// costs in the nodes
@@ -38,19 +38,19 @@ public class TreeSolution {
 	 * the inputfile and constructs the inital tree solution therefore an
 	 * artificial node and artificial arcs are constructed
 	 * 
-	 * @param L2
+	 * @param L
 	 * @param nodes
 	 * @param numberOfNodes
 	 * @param maxCost
 	 *            that is needed to calculate the costs of the artificial arcs
 	 */
-	public TreeSolution(AdjacencyList L2, Node[] nodes, int numberOfNodes,
+	public TreeSolution(AdjacencyList L, Node[] nodes, int numberOfNodes,
 			double maxCost) {
-		this.L2 = L2;
-		this.U2 = new AdjacencyList(numberOfNodes + 1); // U partition is empty
+		this.L = L;
+		this.U = new AdjacencyList(numberOfNodes + 1); // U partition is empty
 														// at the beginning
 		// int kIndex = numberOfNodes +1; //index of the artificial node
-		this.Tree2 = new AdjacencyList(numberOfNodes + 1);
+		this.Tree = new AdjacencyList(numberOfNodes + 1);
 		int kIndex = 0;
 		double costArtificialArc = 1 + 0.5 * numberOfNodes * maxCost; // ->skript
 
@@ -89,11 +89,11 @@ public class TreeSolution {
 				flow = Math.abs(node.getNettodemand());
 			}
 			// flow has still to be added
-			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0,
+			Arc arc = new Arc(startNodeIndex, endNodeIndex, 0,
 					Double.POSITIVE_INFINITY, costArtificialArc, flow); // add
 																		// artificial
 																		// arcs
-			this.Tree2.addEdge(arc);
+			this.Tree.addEdge(arc);
 
 			this.predecessorArray[i] = kIndex;
 			this.depthArray[i] = 1;
@@ -107,8 +107,8 @@ public class TreeSolution {
 		}
 		// System.out.print(this.graphvizStringTree());
 		// System.out.print(this.graphvizStringTLU());
-		System.out.println("List L2:!!!");
-		Iterator<Arc2> iterator = L2.iterator();
+		System.out.println("List L:!!!");
+		Iterator<Arc> iterator = L.iterator();
 		while (iterator.hasNext()) {
 			System.out.println(iterator.next());
 		}
@@ -127,7 +127,7 @@ public class TreeSolution {
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		Arc2 enteringArc2 = finderFirstRule.getEnteringArcObject()
+		Arc enteringArc2 = finderFirstRule.getEnteringArcObject()
 				.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
 		System.out.println(enteringArc2);
@@ -135,7 +135,7 @@ public class TreeSolution {
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(
 				enteringArc2.getStartNodeIndex(),
 				enteringArc2.getEndNodeIndex());
-		Arc2 leavingArc = changeFlowFindLeaving(pathUV, epsilon);
+		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		updateLTU(leavingArc, enteringArc2);
 		System.out.println("leavingarc::::");
 		System.out.println(leavingArc);
@@ -143,18 +143,18 @@ public class TreeSolution {
 	}
 
 
-	private void updateLTU(Arc2 leavingArc, Arc2 enteringArc) {
-		Tree2.addEdge(enteringArc);
-		Tree2.removeEdge(leavingArc);
+	private void updateLTU(Arc leavingArc, Arc enteringArc) {
+		Tree.addEdge(enteringArc);
+		Tree.removeEdge(leavingArc);
 		if (enteringArc.getReducedCosts() < 0)
-			L2.removeEdge(enteringArc);
+			L.removeEdge(enteringArc);
 		else
-			U2.removeEdge(enteringArc);
+			U.removeEdge(enteringArc);
 
 		if (leavingArc.getFlow() == leavingArc.getUpperLimit())
-			U2.addEdge(leavingArc);
+			U.addEdge(leavingArc);
 		else {
-			L2.addEdge(leavingArc);
+			L.addEdge(leavingArc);
 			assert leavingArc.getFlow() == leavingArc.getLowerLimit();
 		}
 	}
@@ -166,7 +166,7 @@ public class TreeSolution {
 	 *            true if the arc is directed toward the root, false if it is
 	 *            directed away from the root
 	 */
-	private void updateFairPrices(Arc2 leavingArc, Arc2 enteringArc) {
+	private void updateFairPrices(Arc leavingArc, Arc enteringArc) {
 		double sign;
 		//enteringArc from T1 to T2
 		if(thread[enteringArc.getStartNodeIndex()] < thread[enteringArc.getEndNodeIndex()])
@@ -202,7 +202,7 @@ public class TreeSolution {
 	 *            The leaving arc in the current iteration
 	 */
 
-	private void updateThread(Arc2 enteringArc, Arc2 leavingArc) {
+	private void updateThread(Arc enteringArc, Arc leavingArc) {
 
 		int node, e1, e2, f1, f2, a, b, i, j, k, r;
 
@@ -323,7 +323,7 @@ public class TreeSolution {
 
 		FlowFinderObject flowFinder;
 
-		Arc2 enteringArc = L2.getEdge(indexU, indexV);
+		Arc enteringArc = L.getEdge(indexU, indexV);
 		System.out.println("\nEnteringArc");
 		System.out.println(enteringArc);
 		boolean forwardBefore = enteringArc.getReducedCosts() < 0 ? true
@@ -414,7 +414,7 @@ public class TreeSolution {
 
 	private FlowFinderObject getPossibleFlowChange(int u, int Pu,
 			boolean uWasStart, boolean forwardBefore) {
-		Arc2 leavingArc = Tree2.getEdgeInTree(u, Pu);
+		Arc leavingArc = Tree.getEdgeInTree(u, Pu);
 		boolean sameDirection;
 		if (leavingArc.getStartNodeIndex() == u) {
 			// <--u-->Pu
@@ -473,7 +473,7 @@ public class TreeSolution {
 	private class EnteringArcFinderCandidatesPivotRule {
 		// list of candidates, in order to not search for new arcs in each
 		// iteration
-		private LinkedList<Arc2> candidates = new LinkedList<Arc2>();
+		private LinkedList<Arc> candidates = new LinkedList<Arc>();
 		// number of arcs that will be put in the list when it is refreshed
 		private int filledListSize;
 		// numbe of arcs we will choose after the rule of the best merit from
@@ -525,7 +525,7 @@ public class TreeSolution {
 		 * 
 		 * @return the entering arc
 		 */
-		public Arc2 getEnteringArc() {
+		public Arc getEnteringArc() {
 			if (noMorecandidates && this.candidates.isEmpty())
 				return null;
 			if (!noMorecandidates
@@ -560,32 +560,32 @@ public class TreeSolution {
 	 */
 	private class EnteringArcFinderFirstRule {
 
-		private Iterator<Arc2> LIterator;
-		private Iterator<Arc2> UIterator;
+		private Iterator<Arc> LIterator;
+		private Iterator<Arc> UIterator;
 		// just for testing
 
-		private Arc2 arc;
+		private Arc arc;
 
 		public EnteringArcFinderFirstRule() {
-			this.LIterator = L2.iterator();
-			this.UIterator = U2.iterator();
+			this.LIterator = L.iterator();
+			this.UIterator = U.iterator();
 
 			/**
 			 * init reduced costs
 			 */
 			int startnode;
 			int endnode;
-			for (Arc2 arc : L2) {
+			for (Arc arc : L) {
 				startnode = arc.getStartNodeIndex();
 				endnode = arc.getEndNodeIndex();
 				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
 						- fairPrices[endnode]);
 			}
 
-			// assert U2 is empty
+			// assert U is empty
 
-			System.out.println("L2 after init reduced costs");
-			System.out.println(L2);
+			System.out.println("L after init reduced costs");
+			System.out.println(L);
 
 		}
 
@@ -612,7 +612,7 @@ public class TreeSolution {
 	 * @param r
 	 * @return
 	 */
-	LinkedList<Arc2> findCandidatesForEnteringArc(boolean firstRun, int r) { // r
+	LinkedList<Arc> findCandidatesForEnteringArc(boolean firstRun, int r) { // r
 																				// is
 																				// the
 																				// number
@@ -625,9 +625,9 @@ public class TreeSolution {
 																				// in
 																				// this
 																				// call
-		LinkedList<Arc2> candidates = new LinkedList<Arc2>();
+		LinkedList<Arc> candidates = new LinkedList<Arc>();
 		int i = 0;
-		for (Arc2 arc : L2) {
+		for (Arc arc : L) {
 			int startnode;
 			int endnode;
 			if (firstRun) {
@@ -650,11 +650,11 @@ public class TreeSolution {
 
 	}
 
-	private Arc2 changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle,
+	private Arc changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle,
 			double epsilon) {
 		Iterator<FlowFinderObject> iterator = cycle.iterator();
 		FlowFinderObject flowFinder;
-		Arc2 leavingArc = null;
+		Arc leavingArc = null;
 		while (iterator.hasNext()) {
 			flowFinder = iterator.next();
 			double sign = 1;
@@ -703,11 +703,11 @@ public class TreeSolution {
 		string.append("\nthread Array: ");
 		string.append(intArrayToString(thread));
 
-		string.append("\nL2: ");
-		string.append(L2);
+		string.append("\nL: ");
+		string.append(L);
 
-		string.append("\nTree2: ");
-		string.append(Tree2);
+		string.append("\nTree: ");
+		string.append(Tree);
 
 		return string.toString();
 	}
@@ -723,7 +723,7 @@ public class TreeSolution {
 	// StringBuffer string = new StringBuffer(
 	// "\n Treesolution String for GRAPHVIZ: \n	\n digraph Treesolution { \n	node [shape = circle]; ");
 	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcs = Tree2.size();
+	// int lastIndexArcs = Tree.size();
 	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
 	// int startIndex = 0;
 	// int endIndex = 0;
@@ -738,7 +738,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of the Tree
 	// for (int i = lastIndexArcs - 1; i >= 0; i--) {
-	// arc = Tree2.get(i);
+	// arc = Tree.get(i);
 	// startIndex = arc.getStartNodeIndex();
 	// endIndex = arc.getEndNodeIndex();
 	// string.append(startIndex);
@@ -771,9 +771,9 @@ public class TreeSolution {
 	// StringBuffer string = new StringBuffer(
 	// "\n T,L,U String for GRAPHVIZ: \n	\n digraph TLU { \n	node [shape = circle]; ");
 	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcsT = Tree2.size();
-	// int lastIndexArcsL = L2.size();
-	// // int lastIndexArcsU = U2.size();
+	// int lastIndexArcsT = Tree.size();
+	// int lastIndexArcsL = L.size();
+	// // int lastIndexArcsU = U.size();
 	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
 	// int startIndex = 0;
 	// int endIndex = 0;
@@ -788,7 +788,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of the Tree. They will be black.
 	// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
-	// arc = Tree2.get(i);
+	// arc = Tree.get(i);
 	// startIndex = arc.getStartNodeIndex();
 	// endIndex = arc.getEndNodeIndex();
 	// string.append(startIndex);
@@ -809,7 +809,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of L. They will be yellow
 	// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
-	// arc = L2.get(i);
+	// arc = L.get(i);
 	// startIndex = arc.getStartNodeIndex();
 	// endIndex = arc.getEndNodeIndex();
 	// string.append(startIndex);
@@ -830,7 +830,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of U. They will be red
 	// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-	// // arc = U2.get(i);
+	// // arc = U.get(i);
 	// // startIndex = arc.getStartNodeIndex();
 	// // endIndex = arc.getEndNodeIndex();
 	// // string.append(startIndex);
@@ -864,9 +864,9 @@ public class TreeSolution {
 	// StringBuffer string = new StringBuffer(
 	// "\n Entering Arc String for GRAPHVIZ: \n	\n digraph enteringArc { \n	node [shape = circle]; ");
 	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcsT = Tree2.size();
-	// int lastIndexArcsL = L2.size();
-	// // int lastIndexArcsU = U2.size();
+	// int lastIndexArcsT = Tree.size();
+	// int lastIndexArcsL = L.size();
+	// // int lastIndexArcsU = U.size();
 	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
 	// int startIndex = 0;
 	// int endIndex = 0;
@@ -881,7 +881,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of the Tree. They will be black.
 	// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
-	// arc = Tree2.get(i);
+	// arc = Tree.get(i);
 	// startIndex = arc.getStartNodeIndex();
 	// endIndex = arc.getEndNodeIndex();
 	// string.append(startIndex);
@@ -906,7 +906,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of L. They will be yellow
 	// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
-	// arc = L2.get(i);
+	// arc = L.get(i);
 	// startIndex = arc.getStartNodeIndex();
 	// endIndex = arc.getEndNodeIndex();
 	// string.append(startIndex);
@@ -931,7 +931,7 @@ public class TreeSolution {
 	//
 	// // write all arcs of U. They will be red
 	// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-	// // arc = U2.get(i);
+	// // arc = U.get(i);
 	// // startIndex = arc.getStartNodeIndex();
 	// // endIndex = arc.getEndNodeIndex();
 	// // string.append(startIndex);
