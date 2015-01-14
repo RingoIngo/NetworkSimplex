@@ -140,23 +140,6 @@ public class TreeSolution {
 		System.out.println(leavingArc);
 		return false;
 	}
-
-	/**
-	 * executes one iteration of the algorithm
-	 * 
-	 * @return true if the tree solution is not yet optimal, false else this is
-	 *         just so for the moment, i think we also have to capture cases
-	 *         like unbounded problems and problems without solution
-	 */
-	public boolean updateTreeSolution() {
-		// ...
-
-		// this.updateFairPrices();
-
-		this.updateCReduced();
-		// ..
-		return true;
-	}
 	
 	
 	private void updateLTU(Arc2 leavingArc, Arc2 enteringArc) {
@@ -289,10 +272,6 @@ public class TreeSolution {
 		} else {
 			this.thread[k] = r;
 		}
-
-	}
-
-	private void updateCReduced() {
 
 	}
 
