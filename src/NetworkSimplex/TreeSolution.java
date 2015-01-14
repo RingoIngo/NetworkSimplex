@@ -142,22 +142,6 @@ public class TreeSolution {
 		return false;
 	}
 
-	/**
-	 * executes one iteration of the algorithm
-	 * 
-	 * @return true if the tree solution is not yet optimal, false else this is
-	 *         just so for the moment, i think we also have to capture cases
-	 *         like unbounded problems and problems without solution
-	 */
-	public boolean updateTreeSolution() {
-		// ...
-
-		// this.updateFairPrices();
-
-		this.updateCReduced();
-		// ..
-		return true;
-	}
 
 	private void updateLTU(Arc2 leavingArc, Arc2 enteringArc) {
 		Tree2.addEdge(enteringArc);
@@ -301,9 +285,6 @@ public class TreeSolution {
 	}
 
 
-	private void updateCReduced() {
-
-	}
 
 	/**
 	 * this method finds a path between the nodes with indexU and indexV it is
