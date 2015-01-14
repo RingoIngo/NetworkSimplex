@@ -30,12 +30,8 @@ public class TreeSolution {
 	// in the script referred to as y
 	private double[] fairPrices;
 
-
-	//eine krücke
+	// eine krücke
 	private double epsilon;
-
-
-
 
 	/**
 	 * this constructor uses the information that the Reader class connects from
@@ -92,8 +88,11 @@ public class TreeSolution {
 				fairPrices[i] = -costArtificialArc; // initial fair prices
 				flow = Math.abs(node.getNettodemand());
 			}
-			//flow has still to be added
-			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, flow);	//add artificial arcs
+			// flow has still to be added
+			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0,
+					Double.POSITIVE_INFINITY, costArtificialArc, flow); // add
+																		// artificial
+																		// arcs
 			this.Tree2.addEdge(arc);
 
 			this.predecessorArray[i] = kIndex;
@@ -119,42 +118,47 @@ public class TreeSolution {
 	 * 
 	 * 
 	 */
-	public boolean iterate(){
-		//		EnteringArcFinderCandidatesPivotRule finderPivotRule = new EnteringArcFinderCandidatesPivotRule();
-		//		Arc2 enteringArc = finderPivotRule.getEnteringArc();
-		//		System.out.println("Arc (found by pivot rule class): ");
-		//		System.out.println(enteringArc);
+	public boolean iterate() {
+		// EnteringArcFinderCandidatesPivotRule finderPivotRule = new
+		// EnteringArcFinderCandidatesPivotRule();
+		// Arc2 enteringArc = finderPivotRule.getEnteringArc();
+		// System.out.println("Arc (found by pivot rule class): ");
+		// System.out.println(enteringArc);
 
-
-		//dont init each time
+		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		Arc2 enteringArc2 = finderFirstRule.getEnteringArcObject().getEnteringArc();
+		Arc2 enteringArc2 = finderFirstRule.getEnteringArcObject()
+				.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
 		System.out.println(enteringArc2);
 
-
-		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc2.getStartNodeIndex(), enteringArc2.getEndNodeIndex());
+		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(
+				enteringArc2.getStartNodeIndex(),
+				enteringArc2.getEndNodeIndex());
 		Arc2 leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		updateLTU(leavingArc, enteringArc2);
 		System.out.println("leavingarc::::");
 		System.out.println(leavingArc);
 		return false;
 	}
-	
-	
+
+
 	private void updateLTU(Arc2 leavingArc, Arc2 enteringArc) {
 		Tree2.addEdge(enteringArc);
 		Tree2.removeEdge(leavingArc);
-		if(enteringArc.getReducedCosts()<0) L2.removeEdge(enteringArc);
-		else U2.removeEdge(enteringArc);
-		
-		if(leavingArc.getFlow()==leavingArc.getUpperLimit()) U2.addEdge(leavingArc);
+		if (enteringArc.getReducedCosts() < 0)
+			L2.removeEdge(enteringArc);
+		else
+			U2.removeEdge(enteringArc);
+
+		if (leavingArc.getFlow() == leavingArc.getUpperLimit())
+			U2.addEdge(leavingArc);
 		else {
 			L2.addEdge(leavingArc);
 			assert leavingArc.getFlow() == leavingArc.getLowerLimit();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param leavingArc
@@ -209,11 +213,14 @@ public class TreeSolution {
 		}
 
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
-		node=enteringArc.getStartNodeIndex();;	//check if the startnode is in S
-		while((node != f2) && (node != -1)){	// if node is in S then there is a path from node to f2 on the way from e to the root
+		node = enteringArc.getStartNodeIndex();
+		; // check if the startnode is in S
+		while ((node != f2) && (node != -1)) { // if node is in S then there is
+												// a path from node to f2 on the
+												// way from e to the root
 			node = this.predecessorArray[node];
 		}
-		if (node == f2){
+		if (node == f2) {
 			e2 = enteringArc.getStartNodeIndex();
 			e1 = enteringArc.getEndNodeIndex();
 		} else {
@@ -236,7 +243,7 @@ public class TreeSolution {
 		}
 		r = this.thread[k];
 
-		// 3. if we are at the end of S* (thats means being at the last element
+		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
 		while (i != f2) {
@@ -276,6 +283,65 @@ public class TreeSolution {
 	}
 
 	/**
+	 * a method to update the predecessor array. We just have to update the
+	 * predecessors of all nodes on the 'pivot stem', i.e. all nodes on the way
+	 * from e2 to f2 in S
+	 * 
+	 * @param enteringArc
+	 * @param leavingArc
+	 */
+	private void updatePredecessorArray(Arc2 enteringArc, Arc2 leavingArc) {
+
+		int node1, node2, node3, e1, e2, f1, f2;
+
+		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
+		// (that would be the case when d(f2) > d(f1) )
+		if (depthArray[leavingArc.getEndNodeIndex()] > depthArray[leavingArc
+				.getStartNodeIndex()]) {
+			f1 = leavingArc.getStartNodeIndex();
+			f2 = leavingArc.getEndNodeIndex();
+		} else {
+			f1 = leavingArc.getEndNodeIndex();
+			f2 = leavingArc.getStartNodeIndex();
+		}
+
+		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
+		node1 = enteringArc.getStartNodeIndex();
+		; // check if the startnode is in S
+		while ((node1 != f2) && (node1 != -1)) { // if node is in S then there
+													// is
+													// a path from node to f2 on
+													// the
+													// way from e to the root
+			node1 = this.predecessorArray[node1];
+		}
+		if (node1 == f2) {
+			e1 = enteringArc.getEndNodeIndex();
+			e2 = enteringArc.getStartNodeIndex();
+		} else {
+			e1 = enteringArc.getStartNodeIndex();
+			e2 = enteringArc.getEndNodeIndex();
+		}
+
+		// change the value of pred(e2)
+		node1 = this.predecessorArray[e2]; // save the current predecessor of e2
+		this.predecessorArray[e2] = e1; // update the predecessor of e2
+
+		node2 = e2; // initial startnode of the pivot stem
+		node3 = e2;
+
+		// change the value of pred(k) for all nodes k on the pivot stem
+		while (node3 != f1) {
+			node3 = node1;
+			node1 = this.predecessorArray[node3]; // save the "next" predecessor
+			this.predecessorArray[node3] = node2; // update predecessor
+			node2 = node3; // climb up pivot stem
+		}
+
+	}
+
+
+	/**
 	 * this method finds a path between the nodes with indexU and indexV it is
 	 * used to find the cycle in the tree after adding the entering arc
 	 * 
@@ -283,17 +349,17 @@ public class TreeSolution {
 	 * @param indexV
 	 * @return a list that contains the path
 	 */
-	private LinkedList<FlowFinderObject> findPathBetweenUV(int indexU, int indexV){
+	private LinkedList<FlowFinderObject> findPathBetweenUV(int indexU,
+			int indexV) {
 
 		LinkedList<FlowFinderObject> arcPathU = new LinkedList<FlowFinderObject>();
-
 
 		// maybe use another datastructure here, like a stack or so
 		ArrayList<Integer> pathU = new ArrayList<Integer>();
 		// ArrayList<Integer> pathV = new ArrayList<Integer>();
 		Stack<Integer> pathV = new Stack<Integer>();
-		//the flow change epsilon
-		double epsilon= Double.POSITIVE_INFINITY;
+		// the flow change epsilon
+		double epsilon = Double.POSITIVE_INFINITY;
 
 		// initialize so that u is the index with the greater depth
 		int u, v;
@@ -310,63 +376,78 @@ public class TreeSolution {
 		Arc2 enteringArc = L2.getEdge(indexU, indexV);
 		System.out.println("\nEnteringArc");
 		System.out.println(enteringArc);
-		boolean forwardBefore = enteringArc.getReducedCosts()<0? true : false;
-		boolean uWasStart = indexU == u? true : false;
+		boolean forwardBefore = enteringArc.getReducedCosts() < 0 ? true
+				: false;
+		boolean uWasStart = indexU == u ? true : false;
 
 		boolean addUFirst;
-		if(forwardBefore){
-			if(uWasStart) addUFirst = true;
-			else addUFirst = false;
-		}
-		else {
-			if(uWasStart) addUFirst = false;
-			else addUFirst = true;
+		if (forwardBefore) {
+			if (uWasStart)
+				addUFirst = true;
+			else
+				addUFirst = false;
+		} else {
+			if (uWasStart)
+				addUFirst = false;
+			else
+				addUFirst = true;
 		}
 
-
-		//climb up the longer path until level of v is reached
-		double enteringEpsilon ;
-		if(forwardBefore) enteringEpsilon = enteringArc.getUpperLimit()-enteringArc.getFlow();
-		else enteringEpsilon = enteringArc.getFlow() - enteringArc.getLowerLimit();
-		FlowFinderObject enteringFlowFinderObject = new FlowFinderObject(enteringArc, forwardBefore, enteringEpsilon);
+		// climb up the longer path until level of v is reached
+		double enteringEpsilon;
+		if (forwardBefore)
+			enteringEpsilon = enteringArc.getUpperLimit()
+					- enteringArc.getFlow();
+		else
+			enteringEpsilon = enteringArc.getFlow()
+					- enteringArc.getLowerLimit();
+		FlowFinderObject enteringFlowFinderObject = new FlowFinderObject(
+				enteringArc, forwardBefore, enteringEpsilon);
 		arcPathU.add(enteringFlowFinderObject);
-		while(depthArray[u] > depthArray[v]){
+		while (depthArray[u] > depthArray[v]) {
 			pathU.add(u);
-			flowFinder = getPossibleFlowChange(u, predecessorArray[u], uWasStart, forwardBefore);
+			flowFinder = getPossibleFlowChange(u, predecessorArray[u],
+					uWasStart, forwardBefore);
 			epsilon = Math.min(epsilon, flowFinder.epsilon);
-			uWasStart = flowFinder.leavingArc.getStartNodeIndex()==u? true:false;
+			uWasStart = flowFinder.leavingArc.getStartNodeIndex() == u ? true
+					: false;
 			forwardBefore = flowFinder.forwardEdge;
 			u = predecessorArray[u];
-			if(addUFirst)
+			if (addUFirst)
 				arcPathU.addFirst(flowFinder);
 			else
 				arcPathU.add(flowFinder);
 		}
 
-		boolean forwardBeforeV = enteringArc.getReducedCosts()<0? true : false;
-		boolean vWasStart = indexU == v? true : false;
-		//climb up on both paths until join is reached
-		while(u != v) {
+		boolean forwardBeforeV = enteringArc.getReducedCosts() < 0 ? true
+				: false;
+		boolean vWasStart = indexU == v ? true : false;
+		// climb up on both paths until join is reached
+		while (u != v) {
 
 			pathU.add(u);
-			flowFinder = getPossibleFlowChange(u, predecessorArray[u], uWasStart, forwardBefore);
+			flowFinder = getPossibleFlowChange(u, predecessorArray[u],
+					uWasStart, forwardBefore);
 			epsilon = Math.min(epsilon, flowFinder.epsilon);
-			uWasStart = flowFinder.leavingArc.getStartNodeIndex()==u? true:false;
+			uWasStart = flowFinder.leavingArc.getStartNodeIndex() == u ? true
+					: false;
 			forwardBefore = flowFinder.forwardEdge;
-			if(addUFirst)
+			if (addUFirst)
 				arcPathU.addFirst(flowFinder);
 			else
 				arcPathU.add(flowFinder);
 			u = predecessorArray[u];
 
 			pathV.add(v);
-			flowFinder = getPossibleFlowChange(v, predecessorArray[v], vWasStart, forwardBeforeV);
+			flowFinder = getPossibleFlowChange(v, predecessorArray[v],
+					vWasStart, forwardBeforeV);
 			epsilon = Math.min(epsilon, flowFinder.epsilon);
-			vWasStart = flowFinder.leavingArc.getStartNodeIndex()==u? true:false;
+			vWasStart = flowFinder.leavingArc.getStartNodeIndex() == u ? true
+					: false;
 			forwardBeforeV = flowFinder.forwardEdge;
-			if(addUFirst) 
+			if (addUFirst)
 				arcPathU.add(flowFinder);
-			else 
+			else
 				arcPathU.addFirst(flowFinder);
 			v = predecessorArray[v];
 		}
@@ -375,44 +456,56 @@ public class TreeSolution {
 
 		System.out.println("!!!!!!!!!!!!!");
 		System.out.println(arcPathU);
-		
+
 		this.epsilon = epsilon;
 		return arcPathU;
 
 	}
 
-	private FlowFinderObject getPossibleFlowChange(int u, int Pu, boolean uWasStart,boolean forwardBefore){
-		Arc2 leavingArc = Tree2.getEdgeInTree(u,Pu);
+	private FlowFinderObject getPossibleFlowChange(int u, int Pu,
+			boolean uWasStart, boolean forwardBefore) {
+		Arc2 leavingArc = Tree2.getEdgeInTree(u, Pu);
 		boolean sameDirection;
-		if(leavingArc.getStartNodeIndex()==u){
-			//	 <--u-->Pu
-			if(uWasStart) sameDirection = false;
-			//	-->u-->Pu
-			else sameDirection = true;
+		if (leavingArc.getStartNodeIndex() == u) {
+			// <--u-->Pu
+			if (uWasStart)
+				sameDirection = false;
+			// -->u-->Pu
+			else
+				sameDirection = true;
 		}
-		//u is end node
+		// u is end node
 		else {
-			//	<--u<--Pu
-			if(uWasStart) sameDirection = true;
-			//	-->u<--Pu
-			else sameDirection = false;
+			// <--u<--Pu
+			if (uWasStart)
+				sameDirection = true;
+			// -->u<--Pu
+			else
+				sameDirection = false;
 		}
-		//the edge examined before and this edge BOTH belong to either F or B (forward edges or backwar edges)
-		if(sameDirection){
-			//both edges belong to F
-			if(forwardBefore) 
-				return new FlowFinderObject(leavingArc, true, leavingArc.getUpperLimit()-leavingArc.getFlow());
+		// the edge examined before and this edge BOTH belong to either F or B
+		// (forward edges or backwar edges)
+		if (sameDirection) {
+			// both edges belong to F
+			if (forwardBefore)
+				return new FlowFinderObject(leavingArc, true,
+						leavingArc.getUpperLimit() - leavingArc.getFlow());
 			// both edges belong to B
-			else 
-				return new FlowFinderObject(leavingArc, false , leavingArc.getFlow()-leavingArc.getLowerLimit());
+			else
+				return new FlowFinderObject(leavingArc, false,
+						leavingArc.getFlow() - leavingArc.getLowerLimit());
 		}
-		//edges belong to different partitions F or B
+		// edges belong to different partitions F or B
 		else
-			//the edge examined before was a forward edge --> this one is a backward edge
-			if(forwardBefore) 
-				return new FlowFinderObject(leavingArc, false , leavingArc.getFlow()-leavingArc.getLowerLimit());
-		//the other way round
-			else return new FlowFinderObject(leavingArc, true, leavingArc.getUpperLimit()-leavingArc.getFlow());
+		// the edge examined before was a forward edge --> this one is a
+		// backward edge
+		if (forwardBefore)
+			return new FlowFinderObject(leavingArc, false, leavingArc.getFlow()
+					- leavingArc.getLowerLimit());
+		// the other way round
+		else
+			return new FlowFinderObject(leavingArc, true,
+					leavingArc.getUpperLimit() - leavingArc.getFlow());
 	}
 
 	/**
@@ -519,7 +612,7 @@ public class TreeSolution {
 
 		private Iterator<Arc2> LIterator;
 		private Iterator<Arc2> UIterator;
-		//just for testing
+		// just for testing
 
 		private Arc2 arc;
 
@@ -538,8 +631,8 @@ public class TreeSolution {
 				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
 						- fairPrices[endnode]);
 			}
-			
-			//assert U2 is empty
+
+			// assert U2 is empty
 
 			System.out.println("L2 after init reduced costs");
 			System.out.println(L2);
@@ -547,15 +640,15 @@ public class TreeSolution {
 		}
 
 		private EnteringArcObject getEnteringArcObject() {
-			//so far it only once iterates through the lists
-			while(LIterator.hasNext()){
+			// so far it only once iterates through the lists
+			while (LIterator.hasNext()) {
 				arc = LIterator.next();
-				if(arc.getReducedCosts() < 0)
+				if (arc.getReducedCosts() < 0)
 					return new EnteringArcObject(arc, true, false);
 			}
-			while(UIterator.hasNext()){
+			while (UIterator.hasNext()) {
 				arc = UIterator.next();
-				if(arc.getReducedCosts() > 0)
+				if (arc.getReducedCosts() > 0)
 					return new EnteringArcObject(arc, false, true);
 			}
 
@@ -607,22 +700,25 @@ public class TreeSolution {
 
 	}
 
-	private Arc2 changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle, double epsilon){
+	private Arc2 changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle,
+			double epsilon) {
 		Iterator<FlowFinderObject> iterator = cycle.iterator();
 		FlowFinderObject flowFinder;
 		Arc2 leavingArc = null;
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			flowFinder = iterator.next();
 			double sign = 1;
-			if(!flowFinder.forwardEdge) sign = -1; 
-			flowFinder.leavingArc.setFlow(flowFinder.leavingArc.getFlow()+ sign*epsilon);
-			if(flowFinder.forwardEdge){
-				if(flowFinder.leavingArc.getFlow()==flowFinder.leavingArc.getUpperLimit())
+			if (!flowFinder.forwardEdge)
+				sign = -1;
+			flowFinder.leavingArc.setFlow(flowFinder.leavingArc.getFlow()
+					+ sign * epsilon);
+			if (flowFinder.forwardEdge) {
+				if (flowFinder.leavingArc.getFlow() == flowFinder.leavingArc
+						.getUpperLimit())
 					leavingArc = flowFinder.leavingArc;
-			}
-			else
-				if(flowFinder.leavingArc.getFlow()==flowFinder.leavingArc.getLowerLimit())
-					leavingArc = flowFinder.leavingArc;
+			} else if (flowFinder.leavingArc.getFlow() == flowFinder.leavingArc
+					.getLowerLimit())
+				leavingArc = flowFinder.leavingArc;
 		}
 		return leavingArc;
 	}
