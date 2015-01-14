@@ -16,7 +16,8 @@ public class AdjacencyList implements Iterable<Arc2> {
 		}
 	}
 	
-	public void addEdge(int startNodeIndex, Arc2 edge){
+	public void addEdge(Arc2 edge){
+		int startNodeIndex = edge.getStartNodeIndex();
 		this.adjList[startNodeIndex].add(edge);
 	}
 	
@@ -30,6 +31,11 @@ public class AdjacencyList implements Iterable<Arc2> {
 		}
 		return false;
 	}
+	
+	public boolean removeEdge(Arc2 edge){
+		return removeEdge(edge.getStartNodeIndex(),edge.getEndNodeIndex());
+	}
+	
 	
 	public Arc2 getEdge(int startNodeIndex, int endNodeIndex) {
 		Iterator<Arc2> iterator = this.adjList[startNodeIndex].iterator();

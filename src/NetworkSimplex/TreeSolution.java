@@ -91,7 +91,7 @@ public class TreeSolution {
 			}
 			//flow has still to be added
 			Arc2 arc = new Arc2(startNodeIndex, endNodeIndex, 0, Double.POSITIVE_INFINITY, costArtificialArc, flow);	//add artificial arcs
-			this.Tree2.addEdge(startNodeIndex, arc);
+			this.Tree2.addEdge(arc);
 			this.predecessorArray[i] = kIndex;
 			this.depthArray[i] = 1;
 			/**
@@ -129,6 +129,9 @@ public class TreeSolution {
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc2.getStartNodeIndex(), enteringArc2.getEndNodeIndex());
 		Arc2 leavingArc = changeFlowFindLeaving(pathUV, epsilon);
+		updateLTU(leavingArc, enteringArc2);
+		System.out.println("leavingarc::::");
+		System.out.println(leavingArc);
 		return false;
 	}
 
@@ -148,7 +151,21 @@ public class TreeSolution {
 		//..
 		return true;
 	}
-
+	
+	
+	private void updateLTU(Arc2 leavingArc, Arc2 enteringArc) {
+		Tree2.addEdge(enteringArc);
+		Tree2.removeEdge(leavingArc);
+		if(enteringArc.getReducedCosts()<0) L2.removeEdge(enteringArc);
+		else U2.removeEdge(enteringArc);
+		
+		if(leavingArc.getFlow()==leavingArc.getUpperLimit()) U2.addEdge(leavingArc);
+		else {
+			L2.addEdge(leavingArc);
+			assert leavingArc.getFlow() == leavingArc.getLowerLimit();
+		}
+	}
+	
 	/**
 	 * 
 	 * @param leavingArc
