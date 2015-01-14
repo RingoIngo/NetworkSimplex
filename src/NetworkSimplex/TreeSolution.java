@@ -256,6 +256,7 @@ public class TreeSolution {
 			// 4. climb up one step the pivot stem and update thread[k]
 			j = i;
 			i = this.predecessorArray[i];
+			this.predecessorArray[i] = j;		// update (swap) the predecessors
 			this.thread[k] = i;
 
 			// 5. find the last node k in the left part of S_t
@@ -279,6 +280,7 @@ public class TreeSolution {
 		// execution of 3.
 		this.thread[a] = r;
 		this.thread[e1] = e2;
+		this.predecessorArray[e2] = e1;	// update pred(e2) 
 		if (e1 != a) {
 			this.thread[k] = b;
 		} else {
@@ -287,63 +289,6 @@ public class TreeSolution {
 
 	}
 
-	/**
-	 * a method to update the predecessor array. We just have to update the
-	 * predecessors of all nodes on the 'pivot stem', i.e. all nodes on the way
-	 * from e2 to f2 in S
-	 * 
-	 * @param enteringArc
-	 * @param leavingArc
-	 */
-	private void updatePredecessorArray(Arc2 enteringArc, Arc2 leavingArc) {
-
-		int node1, node2, node3, e1, e2, f1, f2;
-
-		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
-		// (that would be the case when d(f2) > d(f1) )
-		if (depthArray[leavingArc.getEndNodeIndex()] > depthArray[leavingArc
-				.getStartNodeIndex()]) {
-			f1 = leavingArc.getStartNodeIndex();
-			f2 = leavingArc.getEndNodeIndex();
-		} else {
-			f1 = leavingArc.getEndNodeIndex();
-			f2 = leavingArc.getStartNodeIndex();
-		}
-
-		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
-		node1 = enteringArc.getStartNodeIndex();
-		; // check if the startnode is in S
-		while ((node1 != f2) && (node1 != -1)) { // if node is in S then there
-													// is
-													// a path from node to f2 on
-													// the
-													// way from e to the root
-			node1 = this.predecessorArray[node1];
-		}
-		if (node1 == f2) {
-			e1 = enteringArc.getEndNodeIndex();
-			e2 = enteringArc.getStartNodeIndex();
-		} else {
-			e1 = enteringArc.getStartNodeIndex();
-			e2 = enteringArc.getEndNodeIndex();
-		}
-
-		// change the value of pred(e2)
-		node1 = this.predecessorArray[e2]; // save the current predecessor of e2
-		this.predecessorArray[e2] = e1; // update the predecessor of e2
-
-		node2 = e2; // initial startnode of the pivot stem
-		node3 = e2;
-
-		// change the value of pred(k) for all nodes k on the pivot stem
-		while (node3 != f1) {
-			node3 = node1;
-			node1 = this.predecessorArray[node3]; // save the "next" predecessor
-			this.predecessorArray[node3] = node2; // update predecessor
-			node2 = node3; // climb up pivot stem
-		}
-
-	}
 
 
 	/**
