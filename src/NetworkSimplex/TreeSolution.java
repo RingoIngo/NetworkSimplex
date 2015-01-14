@@ -166,9 +166,14 @@ public class TreeSolution {
 	 *            true if the arc is directed toward the root, false if it is
 	 *            directed away from the root
 	 */
-	private void updateFairPrices(Arc2 leavingArc, Arc2 enteringArc,
-			boolean orientation) {
-		double sign = orientation ? -1 : 1;
+	private void updateFairPrices(Arc2 leavingArc, Arc2 enteringArc) {
+		double sign;
+		//enteringArc from T1 to T2
+		if(thread[enteringArc.getStartNodeIndex()] < thread[enteringArc.getEndNodeIndex()])
+			sign = 1;
+		else
+			sign = -1;
+		
 		double ce = enteringArc.getReducedCosts();
 		int f1, f2;
 		if (depthArray[leavingArc.getStartNodeIndex()] < depthArray[leavingArc
