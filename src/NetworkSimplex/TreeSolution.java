@@ -142,7 +142,6 @@ public class TreeSolution {
 		return false;
 	}
 
-
 	private void updateLTU(Arc leavingArc, Arc enteringArc) {
 		Tree.addEdge(enteringArc);
 		Tree.removeEdge(leavingArc);
@@ -168,12 +167,13 @@ public class TreeSolution {
 	 */
 	private void updateFairPrices(Arc leavingArc, Arc enteringArc) {
 		double sign;
-		//enteringArc from T1 to T2
-		if(thread[enteringArc.getStartNodeIndex()] < thread[enteringArc.getEndNodeIndex()])
+		// enteringArc from T1 to T2
+		if (thread[enteringArc.getStartNodeIndex()] < thread[enteringArc
+				.getEndNodeIndex()])
 			sign = 1;
 		else
 			sign = -1;
-		
+
 		double ce = enteringArc.getReducedCosts();
 		int f1, f2;
 		if (depthArray[leavingArc.getStartNodeIndex()] < depthArray[leavingArc
@@ -220,7 +220,7 @@ public class TreeSolution {
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
 		node = enteringArc.getStartNodeIndex();
 		; // check if the startnode is in S
-		while ((node != f2) && (node != -1)) { // if node is in S then there is
+		while ((node != f2) && (node != 0)) { // if node is in S then there is
 												// a path from node to f2 on the
 												// way from e to the root
 			node = this.predecessorArray[node];
@@ -256,7 +256,7 @@ public class TreeSolution {
 			// 4. climb up one step the pivot stem and update thread[k]
 			j = i;
 			i = this.predecessorArray[i];
-			this.predecessorArray[i] = j;		// update (swap) the predecessors
+			this.predecessorArray[i] = j; // update (swap) the predecessors
 			this.thread[k] = i;
 
 			// 5. find the last node k in the left part of S_t
@@ -265,22 +265,22 @@ public class TreeSolution {
 				k = this.thread[k];
 			}
 
-			// 6. find the last node k in the right part of S_t (if it is not
-			// empty)
-			// and update thread[k]
+			// 6. if the right part of S_t is not empty we update thread(k) and
+			// search the last node k in S_t
+			// At the end we update r.
 			if (this.depthArray[r] > this.depthArray[i]) {
 				this.thread[k] = r;
 				while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 					k = this.thread[k];
-					r = this.thread[k];
 				}
 			}
+			r = this.thread[k];
 		}
 
 		// execution of 3.
 		this.thread[a] = r;
 		this.thread[e1] = e2;
-		this.predecessorArray[e2] = e1;	// update pred(e2) 
+		this.predecessorArray[e2] = e1; // update pred(e2)
 		if (e1 != a) {
 			this.thread[k] = b;
 		} else {
@@ -288,8 +288,6 @@ public class TreeSolution {
 		}
 
 	}
-
-
 
 	/**
 	 * this method finds a path between the nodes with indexU and indexV it is
@@ -613,18 +611,18 @@ public class TreeSolution {
 	 * @return
 	 */
 	LinkedList<Arc> findCandidatesForEnteringArc(boolean firstRun, int r) { // r
-																				// is
-																				// the
-																				// number
-																				// of
-																				// candidates
-																				// that
-																				// we
-																				// ll
-																				// provide
-																				// in
-																				// this
-																				// call
+																			// is
+																			// the
+																			// number
+																			// of
+																			// candidates
+																			// that
+																			// we
+																			// ll
+																			// provide
+																			// in
+																			// this
+																			// call
 		LinkedList<Arc> candidates = new LinkedList<Arc>();
 		int i = 0;
 		for (Arc arc : L) {
