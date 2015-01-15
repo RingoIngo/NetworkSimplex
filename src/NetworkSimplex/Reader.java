@@ -26,7 +26,7 @@ public class Reader {
 
 		ArrayList<Node> VPos = new ArrayList<Node>();
 		ArrayList<Node> VNeg = new ArrayList<Node>();
-		AdjacencyList L2 = null;
+		AdjacencyList L = null;
 		int numberOfNodes= -1;
 		int numberOfArcs;
 		double maxCost = 0; // need that for the costs of the artificial arcs
@@ -39,7 +39,7 @@ public class Reader {
 				numberOfArcs = Integer.parseInt(arr[3]);
 				//init node array
 				nodes = new Node[numberOfNodes+1];
-				L2 = new AdjacencyList(numberOfNodes+1);
+				L = new AdjacencyList(numberOfNodes+1);
 			}
 
 			else if (line.charAt(0) == 'n') { //node description
@@ -68,7 +68,7 @@ public class Reader {
 
 							
 				//add arc to L partition
-				L2.addEdge(arc); //and this seems to be also quite time consuming
+				L.addEdge(arc); //and this seems to be also quite time consuming
 				
 				
 				if(arc.getLowerLimit() > 0){		//this code snippet takes A LOT OF TIME!!!
@@ -96,7 +96,7 @@ public class Reader {
 
 		//		System.out.println(VPos);
 		//		System.out.println(VNeg);
-//		System.out.println(L2);
+//		System.out.println(L);
 		for(int i =0; i< nodes.length; i++)
 			System.out.println(nodes[i]);
 		reader.close();
@@ -106,7 +106,7 @@ public class Reader {
 		if(numberOfNodes<0)
 			System.out.println("Fehler beim einlesen!");
 		
-		tree = new TreeSolution(L2, nodes, numberOfNodes,maxCost);
+		tree = new TreeSolution(L, nodes, numberOfNodes,maxCost);
 		System.out.println(tree.toString());
 	}
 

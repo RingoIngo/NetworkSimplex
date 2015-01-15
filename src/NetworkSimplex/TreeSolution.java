@@ -127,16 +127,17 @@ public class TreeSolution {
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		Arc enteringArc2 = finderFirstRule.getEnteringArcObject()
+		Arc enteringArc = finderFirstRule.getEnteringArcObject()
 				.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
-		System.out.println(enteringArc2);
+		System.out.println(enteringArc);
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(
-				enteringArc2.getStartNodeIndex(),
-				enteringArc2.getEndNodeIndex());
+				enteringArc.getStartNodeIndex(),
+				enteringArc.getEndNodeIndex());
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
-		updateLTU(leavingArc, enteringArc2);
+		updateLTU(leavingArc, enteringArc);
+		updateThread(enteringArc, leavingArc);
 		System.out.println("leavingarc::::");
 		System.out.println(leavingArc);
 		return false;
@@ -220,7 +221,7 @@ public class TreeSolution {
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
 		node = enteringArc.getStartNodeIndex();
 		; // check if the startnode is in S
-		while ((node != f2) && (node != -1)) { // if node is in S then there is
+		while ((node != f2) && (node != 0)) { // if node is in S then there is
 												// a path from node to f2 on the
 												// way from e to the root
 			node = this.predecessorArray[node];
@@ -251,6 +252,8 @@ public class TreeSolution {
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
+		System.out.println(i);
+		System.out.println(f2);
 		while (i != f2) {
 
 			// 4. climb up one step the pivot stem and update thread[k]
@@ -258,6 +261,8 @@ public class TreeSolution {
 			i = this.predecessorArray[i];
 			this.predecessorArray[i] = j;		// update (swap) the predecessors
 			this.thread[k] = i;
+			System.out.println(k);
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 			// 5. find the last node k in the left part of S_t
 			k = i;
