@@ -3,8 +3,6 @@ package NetworkSimplex;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Queue;
 import java.util.Stack;
 
 public class TreeSolution {
@@ -107,11 +105,6 @@ public class TreeSolution {
 		}
 		// System.out.print(this.graphvizStringTree());
 		// System.out.print(this.graphvizStringTLU());
-		System.out.println("List L:!!!");
-		Iterator<Arc> iterator = L.iterator();
-		while (iterator.hasNext()) {
-			System.out.println(iterator.next());
-		}
 	}
 
 	/**
@@ -122,8 +115,6 @@ public class TreeSolution {
 		// EnteringArcFinderCandidatesPivotRule finderPivotRule = new
 		// EnteringArcFinderCandidatesPivotRule();
 		// Arc2 enteringArc = finderPivotRule.getEnteringArc();
-		// System.out.println("Arc (found by pivot rule class): ");
-		// System.out.println(enteringArc);
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
@@ -132,17 +123,16 @@ public class TreeSolution {
 		System.out.println("Arc (found by first rule class: )");
 		System.out.println(enteringArc);
 
-		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(
-				enteringArc.getStartNodeIndex(),
-				enteringArc.getEndNodeIndex());
+		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		updateLTU(leavingArc, enteringArc);
 		updateThread(enteringArc, leavingArc);
-		System.out.println("leavingarc::::");
+
+		System.out.println("\nleavingarc:");
 		System.out.println(leavingArc);
+		System.out.println(this.toString());
 		return false;
 	}
-
 
 	private void updateLTU(Arc leavingArc, Arc enteringArc) {
 		Tree.addEdge(enteringArc);
@@ -169,12 +159,13 @@ public class TreeSolution {
 	 */
 	private void updateFairPrices(Arc leavingArc, Arc enteringArc) {
 		double sign;
-		//enteringArc from T1 to T2
-		if(thread[enteringArc.getStartNodeIndex()] < thread[enteringArc.getEndNodeIndex()])
+		// enteringArc from T1 to T2
+		if (thread[enteringArc.getStartNodeIndex()] < thread[enteringArc
+				.getEndNodeIndex()])
 			sign = 1;
 		else
 			sign = -1;
-		
+
 		double ce = enteringArc.getReducedCosts();
 		int f1, f2;
 		if (depthArray[leavingArc.getStartNodeIndex()] < depthArray[leavingArc
@@ -252,17 +243,13 @@ public class TreeSolution {
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
-		System.out.println(i);
-		System.out.println(f2);
 		while (i != f2) {
 
 			// 4. climb up one step the pivot stem and update thread[k]
 			j = i;
 			i = this.predecessorArray[i];
-			this.predecessorArray[i] = j;		// update (swap) the predecessors
+			this.predecessorArray[i] = j; // update (swap) the predecessors
 			this.thread[k] = i;
-			System.out.println(k);
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 			// 5. find the last node k in the left part of S_t
 			k = i;
@@ -270,22 +257,22 @@ public class TreeSolution {
 				k = this.thread[k];
 			}
 
-			// 6. find the last node k in the right part of S_t (if it is not
-			// empty)
-			// and update thread[k]
+			// 6. if the right part of S_t is not empty we update thread(k) and
+			// search the last node k in S_t
+			// At the end we update r.
 			if (this.depthArray[r] > this.depthArray[i]) {
 				this.thread[k] = r;
 				while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 					k = this.thread[k];
-					r = this.thread[k];
 				}
 			}
+			r = this.thread[k];
 		}
 
 		// execution of 3.
 		this.thread[a] = r;
 		this.thread[e1] = e2;
-		this.predecessorArray[e2] = e1;	// update pred(e2) 
+		this.predecessorArray[e2] = e1; // update pred(e2)
 		if (e1 != a) {
 			this.thread[k] = b;
 		} else {
@@ -293,8 +280,6 @@ public class TreeSolution {
 		}
 
 	}
-
-
 
 	/**
 	 * this method finds a path between the nodes with indexU and indexV it is
@@ -304,8 +289,9 @@ public class TreeSolution {
 	 * @param indexV
 	 * @return a list that contains the path
 	 */
-	private LinkedList<FlowFinderObject> findPathBetweenUV(int indexU,
-			int indexV) {
+	private LinkedList<FlowFinderObject> findPathBetweenUV(Arc enteringArc) {
+		int indexU = enteringArc.getStartNodeIndex();
+		int indexV = enteringArc.getEndNodeIndex();
 
 		LinkedList<FlowFinderObject> arcPathU = new LinkedList<FlowFinderObject>();
 
@@ -327,10 +313,6 @@ public class TreeSolution {
 		}
 
 		FlowFinderObject flowFinder;
-
-		Arc enteringArc = L.getEdge(indexU, indexV);
-		System.out.println("\nEnteringArc");
-		System.out.println(enteringArc);
 		boolean forwardBefore = enteringArc.getReducedCosts() < 0 ? true
 				: false;
 		boolean uWasStart = indexU == u ? true : false;
@@ -618,18 +600,18 @@ public class TreeSolution {
 	 * @return
 	 */
 	LinkedList<Arc> findCandidatesForEnteringArc(boolean firstRun, int r) { // r
-																				// is
-																				// the
-																				// number
-																				// of
-																				// candidates
-																				// that
-																				// we
-																				// ll
-																				// provide
-																				// in
-																				// this
-																				// call
+																			// is
+																			// the
+																			// number
+																			// of
+																			// candidates
+																			// that
+																			// we
+																			// ll
+																			// provide
+																			// in
+																			// this
+																			// call
 		LinkedList<Arc> candidates = new LinkedList<Arc>();
 		int i = 0;
 		for (Arc arc : L) {
@@ -717,250 +699,273 @@ public class TreeSolution {
 		return string.toString();
 	}
 
-	// /**
-	// * method to create a String for visualize the Treesolution arc
-	// description:
-	// * [l / x / u] with l = lower limit, x = current flow, u = upper limit
-	// *
-	// * @return String for graphviz
-	// */
-	// public String graphvizStringTree() {
-	// StringBuffer string = new StringBuffer(
-	// "\n Treesolution String for GRAPHVIZ: \n	\n digraph Treesolution { \n	node [shape = circle]; ");
-	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcs = Tree.size();
-	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
-	// int startIndex = 0;
-	// int endIndex = 0;
-	//
-	// // write all node (one node for each index...just in case that thread[]
-	// // contains every node once)
-	// for (int i = 1; i <= lastIndexNodes; i++) {
-	// string.append(i);
-	// string.append("; ");
-	// }
-	// string.append("\n");
-	//
-	// // write all arcs of the Tree
-	// for (int i = lastIndexArcs - 1; i >= 0; i--) {
-	// arc = Tree.get(i);
-	// startIndex = arc.getStartNodeIndex();
-	// endIndex = arc.getEndNodeIndex();
-	// string.append(startIndex);
-	// string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // there is an arc from 1 to 2
-	// string.append(endIndex);
-	// string.append(" [ label = \"[");
-	// string.append(arc.getLowerLimit());
-	// string.append(" / ");
-	// string.append(arc.getFlow()); // write the current flow to the arc
-	// // like " 1->2 [ label = [l/x/u] ];
-	// string.append(" / ");
-	// string.append(arc.getUpperLimit());
-	// string.append(" / ");
-	// string.append(arc.getCost());
-	// string.append(" ]\" ]; \n");
-	// }
-	// string.append("} \n \n");
-	//
-	// return string.toString();
-	// }
-	//
-	// /**
-	// * method to create a String for visualize the data structure T,L,U
-	// * The arcs of T will be black, the arcs of L will be yellow and the arcs
-	// of U will be blue
-	// * @return String for graphviz
-	// */
-	// public String graphvizStringTLU() {
-	// StringBuffer string = new StringBuffer(
-	// "\n T,L,U String for GRAPHVIZ: \n	\n digraph TLU { \n	node [shape = circle]; ");
-	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcsT = Tree.size();
-	// int lastIndexArcsL = L.size();
-	// // int lastIndexArcsU = U.size();
-	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
-	// int startIndex = 0;
-	// int endIndex = 0;
-	//
-	// // write all node (one node for each index...just in case that thread[]
-	// // contains every node once)
-	// for (int i = 1; i <= lastIndexNodes; i++) {
-	// string.append(i);
-	// string.append("; ");
-	// }
-	// string.append("\n");
-	//
-	// // write all arcs of the Tree. They will be black.
-	// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
-	// arc = Tree.get(i);
-	// startIndex = arc.getStartNodeIndex();
-	// endIndex = arc.getEndNodeIndex();
-	// string.append(startIndex);
-	// string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // there is an arc from 1 to 2
-	// string.append(endIndex);
-	// string.append(" [ label = \"[");
-	// string.append(arc.getLowerLimit());
-	// string.append(" / ");
-	// string.append(arc.getFlow()); // write the current flow to the arc
-	// // like " 1->2 [ label = [l/x/u] ];
-	// string.append(" / ");
-	// string.append(arc.getUpperLimit());
-	// string.append(" / ");
-	// string.append(arc.getCost());
-	// string.append(" ]\" ]; \n");
-	// }
-	//
-	// // write all arcs of L. They will be yellow
-	// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
-	// arc = L.get(i);
-	// startIndex = arc.getStartNodeIndex();
-	// endIndex = arc.getEndNodeIndex();
-	// string.append(startIndex);
-	// string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // there is an arc from 1 to 2
-	// string.append(endIndex);
-	// string.append(" [color=yellow, label = \"[");
-	// string.append(arc.getLowerLimit());
-	// string.append(" / ");
-	// string.append(arc.getFlow()); // write the current flow to the arc
-	// // like " 1->2 [ label = [l/x/u] ];
-	// string.append(" / ");
-	// string.append(arc.getUpperLimit());
-	// string.append(" / ");
-	// string.append(arc.getCost());
-	// string.append(" ]\" ]; \n");
-	// }
-	//
-	// // write all arcs of U. They will be red
-	// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-	// // arc = U.get(i);
-	// // startIndex = arc.getStartNodeIndex();
-	// // endIndex = arc.getEndNodeIndex();
-	// // string.append(startIndex);
-	// // string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // // there is an arc from 1 to 2
-	// // string.append(endIndex);
-	// // string.append(" [color=blue, label = \"[");
-	// // string.append(arc.getLowerLimit());
-	// // string.append(" / ");
-	// // string.append(arc.getFlow()); // write the current flow to the arc
-	// // // like " 1->2 [ label = [l/x/u] ];
-	// // string.append(" / ");
-	// // string.append(arc.getUpperLimit());
-	// // string.append(" / ");
-	// // string.append(arc.getCost());
-	// // string.append(" ]\" ]; \n");
-	// // }
-	// string.append("} \n \n");
-	//
-	// return string.toString();
-	// }
-	//
-	// /**
-	// * method to create a String for visualize the datastructure by
-	// highlighting
-	// * the entering arc. The entering arc will be green.
-	// *
-	// * @return String for graphviz
-	// */
-	// public String graphvizStringArcs(Arc2 enteringArc) {
-	// StringBuffer string = new StringBuffer(
-	// "\n Entering Arc String for GRAPHVIZ: \n	\n digraph enteringArc { \n	node [shape = circle]; ");
-	// int lastIndexNodes = this.thread.length - 1;
-	// int lastIndexArcsT = Tree.size();
-	// int lastIndexArcsL = L.size();
-	// // int lastIndexArcsU = U.size();
-	// Arc2 arc = new Arc2(0, 0, 0., 0., 0., 0.);
-	// int startIndex = 0;
-	// int endIndex = 0;
-	//
-	// // write all node (one node for each index...just in case that thread[]
-	// // contains every node once)
-	// for (int i = 1; i <= lastIndexNodes; i++) {
-	// string.append(i);
-	// string.append("; ");
-	// }
-	// string.append("\n");
-	//
-	// // write all arcs of the Tree. They will be black.
-	// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
-	// arc = Tree.get(i);
-	// startIndex = arc.getStartNodeIndex();
-	// endIndex = arc.getEndNodeIndex();
-	// string.append(startIndex);
-	// string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // there is an arc from 1 to 2
-	// string.append(endIndex);
-	// if (arc.equals(enteringArc)) {
-	// string.append(" [color=green, label = \"[");
-	// }else {
-	// string.append(" [ label = \"[");
-	// }
-	// string.append(arc.getLowerLimit());
-	// string.append(" / ");
-	// string.append(arc.getFlow()); // write the current flow to the arc
-	// // like " 1->2 [ label = [l/x/u] ];
-	// string.append(" / ");
-	// string.append(arc.getUpperLimit());
-	// string.append(" / ");
-	// string.append(arc.getCost());
-	// string.append(" ]\" ]; \n");
-	// }
-	//
-	// // write all arcs of L. They will be yellow
-	// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
-	// arc = L.get(i);
-	// startIndex = arc.getStartNodeIndex();
-	// endIndex = arc.getEndNodeIndex();
-	// string.append(startIndex);
-	// string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // there is an arc from 1 to 2
-	// string.append(endIndex);
-	// if (arc.equals(enteringArc)) {
-	// string.append(" [color=green, label = \"[");
-	// }else {
-	// string.append(" [color=yellow, label = \"["); //
-	// }
-	// string.append(arc.getLowerLimit());
-	// string.append(" / ");
-	// string.append(arc.getFlow()); // write the current flow to the arc
-	// // like " 1->2 [ label = [l/x/u/c] ];
-	// string.append(" / ");
-	// string.append(arc.getUpperLimit());
-	// string.append(" / ");
-	// string.append(arc.getCost());
-	// string.append(" ]\" ]; \n");
-	// }
-	//
-	// // write all arcs of U. They will be red
-	// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-	// // arc = U.get(i);
-	// // startIndex = arc.getStartNodeIndex();
-	// // endIndex = arc.getEndNodeIndex();
-	// // string.append(startIndex);
-	// // string.append("->"); // write the arcs like " 1->2 "...it means that
-	// // // there is an arc from 1 to 2
-	// // string.append(endIndex);
-	// // if (arc.equals(enteringArc)) {
-	// // string.append(" [color=green, label = \"[");
-	// // } else {
-	// // string.append(" [color=blue, label = \"[");
-	// // }
-	// // string.append(arc.getLowerLimit());
-	// // string.append(" / ");
-	// // string.append(arc.getFlow());
-	// // // like " 1->2 [ label = [l/x/u] ];
-	// // string.append(" / ");
-	// // string.append(arc.getUpperLimit());
-	// // string.append(" / ");
-	// // string.append(arc.getCost();
-	// // string.append(" ]\" ]; \n");
-	// // }
-	// string.append("} \n \n");
-	//
-	// return string.toString();
-	// }
+	/**
+	 * method to create a String for visualize the Treesolution arc description:
+	 * [l / x / u] with l = lower limit, x = current flow, u = upper limit
+	 * 
+	 * @return String for graphviz
+	 */
+	public String graphvizStringTree() {
+		StringBuffer string = new StringBuffer(
+				"\n Treesolution String for GRAPHVIZ: \n	\n digraph Treesolution { \n	node [shape = circle]; ");
 
+		Iterator<Arc> iteratorT = Tree.iterator();
+
+		int lastIndexNodes = this.thread.length - 1;
+		// int lastIndexArcs = Tree.size();
+		Arc arc = new Arc(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree
+
+		while (iteratorT.hasNext()) {
+			// for (int i = lastIndexArcs - 1; i >= 0; i--)
+
+			arc = iteratorT.next();
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+			// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+			// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());
+			string.append(" ]\" ]; \n");
+		}
+		string.append("} \n \n");
+
+		return string.toString();
+	}
+
+	/**
+	 * method to create a String for visualize the data structure T,L,U The arcs
+	 * of T will be black, the arcs of L will be yellow and the arcs of U will
+	 * be blue
+	 * 
+	 * @return String for graphviz
+	 */
+	public String graphvizStringTLU() {
+		StringBuffer string = new StringBuffer(
+				"\n T,L,U String for GRAPHVIZ: \n	\n digraph TLU { \n	node [shape = circle]; ");
+
+		Iterator<Arc> iteratorT = Tree.iterator();
+		Iterator<Arc> iteratorL = L.iterator();
+		// Iterator<Arc> iteratorU = U.iterator();
+
+		int lastIndexNodes = this.thread.length - 1;
+		// int lastIndexArcsT = Tree.size();
+		// int lastIndexArcsL = L.size();
+		// int lastIndexArcsU = U.size();
+		Arc arc = new Arc(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree. They will be black.
+		while (iteratorT.hasNext()) {
+			// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
+
+			arc = iteratorT.next();
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+			// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [ label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+			// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of L. They will be yellow
+		while (iteratorL.hasNext()) {
+			// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
+
+			arc = iteratorL.next();
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+			// there is an arc from 1 to 2
+			string.append(endIndex);
+			string.append(" [color=yellow, label = \"[");
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+			// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());
+			string.append(" ]\" ]; \n");
+		}
+
+		// // write all arcs of U. They will be red
+		// while (iteratorU.hasNext()) {
+		// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		//
+		// arc = iteratorU.next();
+		// startIndex = arc.getStartNodeIndex();
+		// endIndex = arc.getEndNodeIndex();
+		// string.append(startIndex);
+		// string.append("->"); // write the arcs like " 1->2 "...it means that
+		// // there is an arc from 1 to 2
+		// string.append(endIndex);
+		// string.append(" [color=blue, label = \"[");
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
+		// string.append(arc.getFlow()); // write the current flow to the arc
+		// // like " 1->2 [ label = [l/x/u] ];
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost());
+		// string.append(" ]\" ]; \n");
+		// }
+		string.append("} \n \n");
+
+		return string.toString();
+	}
+
+	/**
+	 * method to create a String for visualize the datastructure by highlighting
+	 * the entering arc. The entering arc will be green.
+	 * 
+	 * @return String for graphviz
+	 */
+	public String graphvizStringArcs(Arc enteringArc) {
+		StringBuffer string = new StringBuffer(
+				"\n Entering Arc String for GRAPHVIZ: \n	\n digraph enteringArc { \n	node [shape = circle]; ");
+
+		Iterator<Arc> iteratorT = Tree.iterator();
+		Iterator<Arc> iteratorL = L.iterator();
+		// Iterator<Arc> iteratorU = U.iterator();
+
+		int lastIndexNodes = this.thread.length - 1;
+		// int lastIndexArcsT = Tree.size();
+		// int lastIndexArcsL = L.size();
+		// int lastIndexArcsU = U.size();
+		Arc arc = new Arc(0, 0, 0., 0., 0., 0.);
+		int startIndex = 0;
+		int endIndex = 0;
+
+		// write all node (one node for each index)
+		for (int i = 1; i <= lastIndexNodes; i++) {
+			string.append(i);
+			string.append("; ");
+		}
+		string.append("\n");
+
+		// write all arcs of the Tree. They will be black.
+		while (iteratorT.hasNext()) {
+			// for (int i = lastIndexArcsT - 1; i >= 0; i--) {
+
+			arc = iteratorT.next();
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+			// there is an arc from 1 to 2
+			string.append(endIndex);
+			if (arc.equals(enteringArc)) {
+				string.append(" [color=green, label = \"[");
+			} else {
+				string.append(" [ label = \"[");
+			}
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+			// like " 1->2 [ label = [l/x/u] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());
+			string.append(" ]\" ]; \n");
+		}
+
+		// write all arcs of L. They will be yellow
+		while (iteratorL.hasNext()) {
+			// for (int i = lastIndexArcsL - 1; i >= 0; i--) {
+
+			arc = iteratorL.next();
+			startIndex = arc.getStartNodeIndex();
+			endIndex = arc.getEndNodeIndex();
+			string.append(startIndex);
+			string.append("->"); // write the arcs like " 1->2 "...it means that
+			// there is an arc from 1 to 2
+			string.append(endIndex);
+			if (arc.equals(enteringArc)) {
+				string.append(" [color=green, label = \"[");
+			} else {
+				string.append(" [color=yellow, label = \"["); //
+			}
+			string.append(arc.getLowerLimit());
+			string.append(" / ");
+			string.append(arc.getFlow()); // write the current flow to the arc
+			// like " 1->2 [ label = [l/x/u/c] ];
+			string.append(" / ");
+			string.append(arc.getUpperLimit());
+			string.append(" / ");
+			string.append(arc.getCost());
+			string.append(" ]\" ]; \n");
+		}
+
+		// // write all arcs of U. They will be red
+		// while (iteratorU.hasNext()) {
+		// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		//
+		// arc = iteratorU.next();
+		// startIndex = arc.getStartNodeIndex();
+		// endIndex = arc.getEndNodeIndex();
+		// string.append(startIndex);
+		// string.append("->"); // write the arcs like " 1->2 "...it means that
+		// // there is an arc from 1 to 2
+		// string.append(endIndex);
+		// if (arc.equals(enteringArc)) {
+		// string.append(" [color=green, label = \"[");
+		// } else {
+		// string.append(" [color=blue, label = \"[");
+		// }
+		// string.append(arc.getLowerLimit());
+		// string.append(" / ");
+		// string.append(arc.getFlow());
+		// // like " 1->2 [ label = [l/x/u] ];
+		// string.append(" / ");
+		// string.append(arc.getUpperLimit());
+		// string.append(" / ");
+		// string.append(arc.getCost());
+		// string.append(" ]\" ]; \n");
+		// }
+		string.append("} \n \n");
+
+		return string.toString();
+	}
 }
