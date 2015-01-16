@@ -163,6 +163,7 @@ public class TreeSolution {
 	 *            directed away from the root
 	 */
 	private void updateFairPrices(Arc leavingArc, Arc enteringArc) {
+		if(leavingArc == enteringArc) return;
 		double sign;
 		// enteringArc from T1 to T2
 		if (thread[enteringArc.getStartNodeIndex()] < thread[enteringArc
