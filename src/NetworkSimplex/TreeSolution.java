@@ -201,7 +201,7 @@ public class TreeSolution {
 	 */
 
 	private void updateThreadPredDepth(Arc enteringArc, Arc leavingArc) {
-
+		if(enteringArc == leavingArc) return;
 		int node, e1, e2, f1, f2, a, b, i, j, k, r;
 
 		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
