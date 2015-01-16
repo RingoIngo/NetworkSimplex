@@ -68,7 +68,7 @@ public class TreeSolution {
 		int startNodeIndex;
 		int endNodeIndex;
 		double flow; // flow is abs(nettodemand)
-		for (int i = 1; i < nodes.length; i++) { // start at one bcz at index 0
+		for (int i = 1; i < nodes.length; i++) { // start at one bcz at index 
 													// there is no node to keep
 													// it easy i.e. nodeIndex =
 													// arrayIndex
@@ -126,6 +126,8 @@ public class TreeSolution {
 		System.out.println(enteringArc);
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
+		System.out.println("\nEpsilon:");
+		System.out.println(epsilon);
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		updateLTU(leavingArc, enteringArc);
 		updateFairPrices(leavingArc, enteringArc);
@@ -182,9 +184,10 @@ public class TreeSolution {
 		assert depthArray[f2] == depthArray[f1] + 1 : "initializing of f1 and f2 in updateFairPrices is wrong";
 		// change the above!!!
 		int k = f2;
-		while (depthArray[k] > depthArray[f2]) {
-			fairPrices[k] = fairPrices[k] + sign * ce;
+		fairPrices[k] = fairPrices[k] + sign * ce;
+		while (depthArray[thread[k]] > depthArray[f2]) {
 			k = thread[k];
+			fairPrices[k] = fairPrices[k] + sign * ce;
 		}
 	}
 
@@ -747,6 +750,19 @@ public class TreeSolution {
 		return string.toString();
 	}
 
+	//TODO : make one method generic
+	private String doubleArrayToString(double[] array) {
+		StringBuffer string = new StringBuffer();
+		for (int i = 0; i < array.length; i++) {
+			string.append("\n");
+			string.append(i);
+			string.append(": ");
+			string.append(array[i]);
+		}
+		return string.toString();
+	}
+	
+	
 	/**
 	 * returns a string representation of the tree solution
 	 */
@@ -760,6 +776,9 @@ public class TreeSolution {
 		string.append("\nthread Array: ");
 		string.append(intArrayToString(thread));
 
+		string.append("\nfair prices Array: ");
+		string.append(doubleArrayToString(fairPrices));
+		
 		string.append("\n\nL: ");
 		string.append(L);
 		
