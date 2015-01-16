@@ -9,7 +9,12 @@ public class Algorithm {
 		try {
 			Reader reader = new Reader(args[0]);
 			TreeSolution tree = reader.getTreeSolution();
-			while(tree.iterate());
+			int numberOfITeration=0;
+			while(tree.iterate()){
+				++numberOfITeration;
+				System.out.println("\n\n\n\n\n iteration:");
+				System.out.println(numberOfITeration);
+			};
 			System.out.println("\nthe costs of this soultion are: ");
 			System.out.println("the way the costs are calculated might be wrong, so dont really rely on that. method was written late at night:)");
 			System.out.println(tree.getCosts());
