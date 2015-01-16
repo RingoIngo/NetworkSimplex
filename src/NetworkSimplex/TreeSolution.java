@@ -128,9 +128,13 @@ public class TreeSolution {
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
 		System.out.println("\nEpsilon:");
 		System.out.println(epsilon);
+		System.out.println("changeFlowFindLeavingArc:");
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
+		System.out.println("updateLTU");
 		updateLTU(leavingArc, enteringArc);
+		System.out.println("updateFairPrices");
 		updateFairPrices(leavingArc, enteringArc);
+		System.out.println("updateThreadPredDepth");
 		updateThreadPredDepth(enteringArc, leavingArc);
 
 		System.out.println("\nleavingarc:");
@@ -252,15 +256,17 @@ public class TreeSolution {
 		}
 		r = this.thread[k];
 
+		int pred = e1;
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
 		while (i != f2) {
-
 			// 4. climb up one step the pivot stem and update thread[k]
 			j = i;
 			i = this.predecessorArray[i];
-			this.predecessorArray[i] = j; // update (swap) the predecessors
+			this.predecessorArray[j] = pred;
+			pred = j;
+//			this.predecessorArray[i] = j; // update (swap) the predecessors
 			this.thread[k] = i;
 
 			//update c (the constant used to update depthArray)
@@ -282,10 +288,11 @@ public class TreeSolution {
 					k = this.thread[k];		
 					this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the right part of S_t
 				}
-			}
+			//i put this inside the if statement...?
 			r = this.thread[k];
+			}
 		}
-
+		this.predecessorArray[i]= pred;
 		// execution of 3.
 		this.thread[a] = r;
 		this.thread[e1] = e2;
