@@ -118,20 +118,22 @@ public class TreeSolution {
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		Arc enteringArc = finderFirstRule.getEnteringArcObject()
-				.getEnteringArc();
+		EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();
+		if(enteringArcObject == null) return false; //no more entering arcs can be found 
+		Arc enteringArc = enteringArcObject.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
 		System.out.println(enteringArc);
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		updateLTU(leavingArc, enteringArc);
-		updateThread(enteringArc, leavingArc);
+		updateFairPrices(leavingArc, enteringArc);
+		updateThreadPredDepth(enteringArc, leavingArc);
 
 		System.out.println("\nleavingarc:");
 		System.out.println(leavingArc);
 		System.out.println(this.toString());
-		return false;
+		return true;
 	}
 
 	private void updateLTU(Arc leavingArc, Arc enteringArc) {
@@ -194,7 +196,7 @@ public class TreeSolution {
 	 *            The leaving arc in the current iteration
 	 */
 
-	private void updateThread(Arc enteringArc, Arc leavingArc) {
+	private void updateThreadPredDepth(Arc enteringArc, Arc leavingArc) {
 
 		int node, e1, e2, f1, f2, a, b, i, j, k, r;
 
@@ -581,8 +583,8 @@ public class TreeSolution {
 
 			// assert U is empty
 
-			System.out.println("L after init reduced costs");
-			System.out.println(L);
+//			System.out.println("L after init reduced costs");
+//			System.out.println(L);
 
 		}
 
@@ -669,6 +671,33 @@ public class TreeSolution {
 		}
 		return leavingArc;
 	}
+	
+	/**
+	 * calculates the costs of the current flow
+	 * @return
+	 */
+	public double getCosts() {
+		double costs = 0;
+		Iterator<Arc> iterator = L.iterator();
+		Arc arc;
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			costs = costs + arc.getFlow() * arc.getCost();
+		}
+		
+		iterator = U.iterator();
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			costs = costs + arc.getFlow() * arc.getCost();
+		}
+		
+		iterator = Tree.iterator();
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			costs = costs + arc.getFlow() * arc.getCost();
+		}
+		return costs;
+	}
 
 	/**
 	 * a small helper method for the string representation of the tree solution
@@ -700,12 +729,15 @@ public class TreeSolution {
 		string.append("\nthread Array: ");
 		string.append(intArrayToString(thread));
 
-		string.append("\nL: ");
+		string.append("\n\nL: ");
 		string.append(L);
+		
+		string.append("\n\nU: ");
+		string.append(U);
 
-		string.append("\nTree: ");
+		string.append("\n\nTree: ");
 		string.append(Tree);
-
+		
 		return string.toString();
 	}
 
