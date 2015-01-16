@@ -118,7 +118,8 @@ public class TreeSolution {
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();
+//		EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();
+		EnteringArcObject enteringArcObject = finderFirstRule.getMaxEnteringArcObject();
 		if(enteringArcObject == null) return false; //no more entering arcs can be found 
 		Arc enteringArc = enteringArcObject.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
@@ -573,8 +574,45 @@ public class TreeSolution {
 
 		}
 
+		private EnteringArcObject getMaxEnteringArcObject(){
+			int startnode;
+			int endnode;
+			Arc maxArc = new Arc(0, 0, 0, 0, 0, 0);//create dummy arc with reduced costs zero
+			maxArc.setReducedCosts(0);
+			boolean L = false;
+			boolean U = false;
+			
+			while (LIterator.hasNext()) {
+				arc = LIterator.next();
+				startnode = arc.getStartNodeIndex();
+				endnode = arc.getEndNodeIndex();
+				arc.setReducedCosts(arc.getCost() + fairPrices[startnode] - fairPrices[endnode]);
+				if (arc.getReducedCosts() < maxArc.getReducedCosts()){
+					maxArc = arc;
+					L = true;
+					U = false;
+				}
+			}
+			//TODO: assert L is empty --> if maxArc.getReducedCosts == 0
+			while (UIterator.hasNext()) {
+				arc = UIterator.next();
+				startnode = arc.getStartNodeIndex();
+				endnode = arc.getEndNodeIndex();
+				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]- fairPrices[endnode]);
+				if (arc.getReducedCosts() > Math.abs(maxArc.getReducedCosts())){
+					maxArc = arc;
+					L = false;
+					U = true;
+				}
+			}
+			if(maxArc.getReducedCosts()!=0) {
+				assert !(L==false &&U==false) : "get max edge is wrong! in EnteringArcFinder";
+				return new EnteringArcObject(maxArc, L, U);
+			}
+			return null;
+		}
+		
 		private EnteringArcObject getEnteringArcObject() {
-			// so far it only once iterates through the lists
 			int startnode;
 			int endnode;
 			while (LIterator.hasNext()) {
