@@ -407,7 +407,7 @@ public class TreeSolution {
 		pathU.add(u);
 		pathU.addAll(pathV);
 
-		System.out.println("!!!!!!!!!!!!!");
+		System.out.println("\n\n\nthe cycle starting at the scheitel and in orientation direction:");
 		System.out.println(arcPathU);
 
 		this.epsilon = epsilon;
