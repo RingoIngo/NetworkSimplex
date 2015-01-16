@@ -569,34 +569,27 @@ public class TreeSolution {
 			this.LIterator = L.iterator();
 			this.UIterator = U.iterator();
 
-			/**
-			 * init reduced costs
-			 */
-			int startnode;
-			int endnode;
-			for (Arc arc : L) {
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
-						- fairPrices[endnode]);
-			}
-
 			// assert U is empty
-
-//			System.out.println("L after init reduced costs");
-//			System.out.println(L);
 
 		}
 
 		private EnteringArcObject getEnteringArcObject() {
 			// so far it only once iterates through the lists
+			int startnode;
+			int endnode;
 			while (LIterator.hasNext()) {
 				arc = LIterator.next();
+				startnode = arc.getStartNodeIndex();
+				endnode = arc.getEndNodeIndex();
+				arc.setReducedCosts(arc.getCost() + fairPrices[startnode] - fairPrices[endnode]);
 				if (arc.getReducedCosts() < 0)
 					return new EnteringArcObject(arc, true, false);
 			}
 			while (UIterator.hasNext()) {
 				arc = UIterator.next();
+				startnode = arc.getStartNodeIndex();
+				endnode = arc.getEndNodeIndex();
+				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]- fairPrices[endnode]);
 				if (arc.getReducedCosts() > 0)
 					return new EnteringArcObject(arc, false, true);
 			}

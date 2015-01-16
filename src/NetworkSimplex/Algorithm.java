@@ -13,7 +13,7 @@ public class Algorithm {
 			System.out.println("\nthe costs of this soultion are: ");
 			System.out.println("the way the costs are calculated might be wrong, so dont really rely on that. method was written late at night:)");
 			System.out.println(tree.getCosts());
-			
+			System.out.println(tree);
 			//maybe write the solution now to a file or so
 			
 			

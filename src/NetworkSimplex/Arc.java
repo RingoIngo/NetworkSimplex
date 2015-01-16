@@ -7,7 +7,7 @@ public class Arc {
 	private double cost;
 	private double lowerLimit;
 	private double upperLimit;
-	private double reducedCosts;
+	private Double reducedCosts;
 	private double flow;
 	
 	
@@ -20,7 +20,7 @@ public class Arc {
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
 		this.flow =flow;
-		this.reducedCosts = -1;
+		this.reducedCosts = null;
 	}
 
 
