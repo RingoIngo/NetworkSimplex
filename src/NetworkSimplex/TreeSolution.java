@@ -236,11 +236,12 @@ public class TreeSolution {
 		//calculate c1 for depth update (c1 is the constant used for S1)
 		int c = depthArray[e1] - depthArray[e2] +1;
 		
+		this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i ( = v1 = e2)
 		// 2. finding the last node k in S_1 and initialize the value of r
 		k = i;
 		while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
-			this.depthArray[k] = this.depthArray[k] + c;	//update depthArray in S1
 			k = this.thread[k];
+			this.depthArray[k] = this.depthArray[k] + c;	//update depthArray in S1 except for v1
 		}
 		r = this.thread[k];
 
@@ -257,11 +258,12 @@ public class TreeSolution {
 
 			//update c (the constant used to update depthArray)
 			c = c +2;
+			this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i
 			// 5. find the last node k in the left part of S_t
 			k = i;
 			while (this.thread[k] != j) {
-				this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the left part of S_t
 				k = this.thread[k];
+				this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the left part of S_t
 			}
 
 			// 6. if the right part of S_t is not empty we update thread(k) and
@@ -269,11 +271,9 @@ public class TreeSolution {
 			// At the end we update r.
 			if (this.depthArray[r] +c > this.depthArray[i]) {	//we add the constant added to depthArray[i] also to depthArray[r]
 				this.thread[k] = r;								//so that the inequation still gives us the right result
-				while (this.depthArray[this.thread[k]] + c > this.depthArray[i]) {		
-					//TODO: if not updated before, update										//this works because if x > y and y > z --> x > z
-					k = this.thread[k];		//i.e. we are walking through all S_l with l<=i and all of them except for the right part of 
-					//of S_t have been updated yet, so d(k_new) > d(k_old)
-					//the last element (the one that violates the while statement) has not been updated yet, so the inequation holds, too
+				while (this.depthArray[this.thread[k]] + c > this.depthArray[i]) {		//same here
+					k = this.thread[k];		
+					this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the right part of S_t
 				}
 			}
 			r = this.thread[k];
