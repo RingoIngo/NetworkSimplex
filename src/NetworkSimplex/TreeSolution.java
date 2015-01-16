@@ -362,7 +362,8 @@ public class TreeSolution {
 			flowFinder = getPossibleFlowChange(u, predecessorArray[u],
 					uWasStart, forwardBefore);
 			epsilon = Math.min(epsilon, flowFinder.epsilon);
-			uWasStart = flowFinder.leavingArc.getStartNodeIndex() == u ? true
+			//hmmmmmm
+			uWasStart = flowFinder.leavingArc.getStartNodeIndex() == predecessorArray[u] ? true
 					: false;
 			forwardBefore = flowFinder.forwardEdge;
 			u = predecessorArray[u];
