@@ -840,7 +840,7 @@ public class TreeSolution {
 
 		Iterator<Arc> iteratorT = Tree.iterator();
 		Iterator<Arc> iteratorL = L.iterator();
-		// Iterator<Arc> iteratorU = U.iterator();
+		Iterator<Arc> iteratorU = U.iterator();
 
 		int lastIndexNodes = this.thread.length - 1;
 		// int lastIndexArcsT = Tree.size();
@@ -903,28 +903,28 @@ public class TreeSolution {
 			string.append(" ]\" ]; \n");
 		}
 
-		// // write all arcs of U. They will be red
-		// while (iteratorU.hasNext()) {
-		// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-		//
-		// arc = iteratorU.next();
-		// startIndex = arc.getStartNodeIndex();
-		// endIndex = arc.getEndNodeIndex();
-		// string.append(startIndex);
-		// string.append("->"); // write the arcs like " 1->2 "...it means that
-		// // there is an arc from 1 to 2
-		// string.append(endIndex);
-		// string.append(" [color=blue, label = \"[");
-		// string.append(arc.getLowerLimit());
-		// string.append(" / ");
-		// string.append(arc.getFlow()); // write the current flow to the arc
-		// // like " 1->2 [ label = [l/x/u] ];
-		// string.append(" / ");
-		// string.append(arc.getUpperLimit());
-		// string.append(" / ");
-		// string.append(arc.getCost());
-		// string.append(" ]\" ]; \n");
-		// }
+		 // write all arcs of U. They will be red
+		 while (iteratorU.hasNext()) {
+		 // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		
+		 arc = iteratorU.next();
+		 startIndex = arc.getStartNodeIndex();
+		 endIndex = arc.getEndNodeIndex();
+		 string.append(startIndex);
+		 string.append("->"); // write the arcs like " 1->2 "...it means that
+		 // there is an arc from 1 to 2
+		 string.append(endIndex);
+		 string.append(" [color=blue, label = \"[");
+		 string.append(arc.getLowerLimit());
+		 string.append(" / ");
+		 string.append(arc.getFlow()); // write the current flow to the arc
+		 // like " 1->2 [ label = [l/x/u] ];
+		 string.append(" / ");
+		 string.append(arc.getUpperLimit());
+		 string.append(" / ");
+		 string.append(arc.getCost());
+		 string.append(" ]\" ]; \n");
+		 }
 		string.append("} \n \n");
 
 		return string.toString();
@@ -942,7 +942,7 @@ public class TreeSolution {
 
 		Iterator<Arc> iteratorT = Tree.iterator();
 		Iterator<Arc> iteratorL = L.iterator();
-		// Iterator<Arc> iteratorU = U.iterator();
+		 Iterator<Arc> iteratorU = U.iterator();
 
 		int lastIndexNodes = this.thread.length - 1;
 		// int lastIndexArcsT = Tree.size();
@@ -1013,32 +1013,32 @@ public class TreeSolution {
 			string.append(" ]\" ]; \n");
 		}
 
-		// // write all arcs of U. They will be red
-		// while (iteratorU.hasNext()) {
-		// // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
-		//
-		// arc = iteratorU.next();
-		// startIndex = arc.getStartNodeIndex();
-		// endIndex = arc.getEndNodeIndex();
-		// string.append(startIndex);
-		// string.append("->"); // write the arcs like " 1->2 "...it means that
-		// // there is an arc from 1 to 2
-		// string.append(endIndex);
-		// if (arc.equals(enteringArc)) {
-		// string.append(" [color=green, label = \"[");
-		// } else {
-		// string.append(" [color=blue, label = \"[");
-		// }
-		// string.append(arc.getLowerLimit());
-		// string.append(" / ");
-		// string.append(arc.getFlow());
-		// // like " 1->2 [ label = [l/x/u] ];
-		// string.append(" / ");
-		// string.append(arc.getUpperLimit());
-		// string.append(" / ");
-		// string.append(arc.getCost());
-		// string.append(" ]\" ]; \n");
-		// }
+		 // write all arcs of U. They will be red
+		 while (iteratorU.hasNext()) {
+		 // for (int i = lastIndexArcsU - 1; i >= 0; i--) {
+		
+		 arc = iteratorU.next();
+		 startIndex = arc.getStartNodeIndex();
+		 endIndex = arc.getEndNodeIndex();
+		 string.append(startIndex);
+		 string.append("->"); // write the arcs like " 1->2 "...it means that
+		 // there is an arc from 1 to 2
+		 string.append(endIndex);
+		 if (arc.equals(enteringArc)) {
+		 string.append(" [color=green, label = \"[");
+		 } else {
+		 string.append(" [color=blue, label = \"[");
+		 }
+		 string.append(arc.getLowerLimit());
+		 string.append(" / ");
+		 string.append(arc.getFlow());
+		 // like " 1->2 [ label = [l/x/u] ];
+		 string.append(" / ");
+		 string.append(arc.getUpperLimit());
+		 string.append(" / ");
+		 string.append(arc.getCost());
+		 string.append(" ]\" ]; \n");
+		 }
 		string.append("} \n \n");
 
 		return string.toString();
