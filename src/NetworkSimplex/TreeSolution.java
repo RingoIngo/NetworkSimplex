@@ -86,7 +86,6 @@ public class TreeSolution {
 				fairPrices[i] = -costArtificialArc; // initial fair prices
 				flow = Math.abs(node.getNettodemand());
 			}
-			// flow has still to be added
 			Arc arc = new Arc(startNodeIndex, endNodeIndex, 0,
 					Double.POSITIVE_INFINITY, costArtificialArc, flow); // add
 																		// artificial
@@ -678,6 +677,8 @@ public class TreeSolution {
 				sign = -1;
 			flowFinder.leavingArc.setFlow(flowFinder.leavingArc.getFlow()
 					+ sign * epsilon);
+			assert flowFinder.leavingArc.getFlow()<=flowFinder.leavingArc.getUpperLimit() : "flow was increased above upper limit!";
+			assert flowFinder.leavingArc.getFlow()>=flowFinder.leavingArc.getLowerLimit() : "flow was decreased under lower limit!";
 			if (flowFinder.forwardEdge) {
 				if (flowFinder.leavingArc.getFlow() == flowFinder.leavingArc
 						.getUpperLimit())
