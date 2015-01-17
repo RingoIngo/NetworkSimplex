@@ -132,10 +132,12 @@ public class TreeSolution {
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 		System.out.println("updateLTU");
 		updateLTU(leavingArc, enteringArc);
-		System.out.println("updateFairPrices");
-		updateFairPrices(leavingArc, enteringArc);
+//		System.out.println("updateFairPrices");
+//		updateFairPrices(leavingArc, enteringArc);
 		System.out.println("updateThreadPredDepth");
 		updateThreadPredDepth(enteringArc, leavingArc);
+		System.out.println("updateFairPrices");
+		updateFairPrices(leavingArc, enteringArc);
 
 		System.out.println("\nleavingarc:");
 		System.out.println(leavingArc);
@@ -208,6 +210,7 @@ public class TreeSolution {
 	private void updateThreadPredDepth(Arc enteringArc, Arc leavingArc) {
 		if(enteringArc == leavingArc) return;
 		int node, e1, e2, f1, f2, a, b, i, j, k, r;
+//		int sign
 
 		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
 		// (that would be the case when d(f2) > d(f1) )
@@ -231,6 +234,7 @@ public class TreeSolution {
 		if (node == f2) {
 			e2 = enteringArc.getStartNodeIndex();
 			e1 = enteringArc.getEndNodeIndex();
+			
 		} else {
 			e1 = enteringArc.getStartNodeIndex();
 			e2 = enteringArc.getEndNodeIndex();
