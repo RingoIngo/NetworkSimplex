@@ -46,7 +46,7 @@ public class Reader {
 				int nodeIndex = Integer.parseInt(arr[1]);
 				double demand = Double.parseDouble(arr[2]);
 				Node node = new Node(nodeIndex, demand);
-				node.setNettodemand(demand);	//the actual nettodemand is updated whenever a new arc is read in
+				node.setNettodemand(-demand);	//the actual nettodemand is updated whenever a new arc is read in
 				nodes[nodeIndex] = node;
 				//				if(demand < 0) VPos.add(node);		//this is wrong, need nettodemand for this
 				//				else VNeg.add(node);
