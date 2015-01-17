@@ -30,6 +30,9 @@ public class TreeSolution {
 
 	// eine krücke
 	private double epsilon;
+	
+	//just to debug
+	public int numberOfIterations=0;
 
 	/**
 	 * this constructor uses the information that the Reader class connects from
@@ -111,6 +114,7 @@ public class TreeSolution {
 	 * 
 	 */
 	public boolean iterate() {
+		++numberOfIterations;
 		// EnteringArcFinderCandidatesPivotRule finderPivotRule = new
 		// EnteringArcFinderCandidatesPivotRule();
 		// Arc2 enteringArc = finderPivotRule.getEnteringArc();
@@ -215,7 +219,7 @@ public class TreeSolution {
 		//calculate c1 for depth update (c1 is the constant used for S1)
 		int c = depthArray[e1] - depthArray[e2] +1;
 		
-		this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i ( = v1 = e2)
+//		this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i ( = v1 = e2)
 		this.fairPrices[i] = fairPrices[i] + sign * ce;
 		// 2. finding the last node k in S_1 and initialize the value of r
 		k = i;
@@ -225,7 +229,9 @@ public class TreeSolution {
 			this.fairPrices[k] = fairPrices[k] + sign * ce;
 		}
 		r = this.thread[k];
-
+		//update AFTER while!!
+		this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i ( = v1 = e2)
+		
 		int pred = e1;
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
@@ -267,11 +273,12 @@ public class TreeSolution {
 		}
 		this.predecessorArray[i]= pred;
 		// execution of 3.
-		this.thread[a] = r;
 		this.thread[e1] = e2;
 		this.predecessorArray[e2] = e1; // update pred(e2)
 		if (e1 != a) {
 			this.thread[k] = b;
+			//that has to be in the if statement!
+			this.thread[a] = r;
 		} else {
 			this.thread[k] = r;
 		}
@@ -297,7 +304,7 @@ public class TreeSolution {
 		// ArrayList<Integer> pathV = new ArrayList<Integer>();
 		Stack<Integer> pathV = new Stack<Integer>();
 		// the flow change epsilon
-		double epsilon = Double.POSITIVE_INFINITY;
+//		double epsilon = Double.POSITIVE_INFINITY;
 
 		// initialize so that u is the index with the greater depth
 		int u, v;
@@ -338,6 +345,7 @@ public class TreeSolution {
 		FlowFinderObject enteringFlowFinderObject = new FlowFinderObject(
 				enteringArc, forwardBefore, enteringEpsilon);
 		arcPathU.add(enteringFlowFinderObject);
+		double epsilon = enteringEpsilon;
 		while (depthArray[u] > depthArray[v]) {
 			pathU.add(u);
 			flowFinder = getPossibleFlowChange(u, predecessorArray[u],

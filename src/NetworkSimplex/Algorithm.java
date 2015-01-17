@@ -11,10 +11,17 @@ public class Algorithm {
 			Reader reader = new Reader(args[0]);
 			TreeSolution tree = reader.getTreeSolution();
 			int numberOfITeration=0;
+			System.out.println("\n\n\n\n\n iteration:");
+			System.out.println(numberOfITeration);
 			while(tree.iterate()){
 				++numberOfITeration;
-				System.out.println("\n\n\n\n\n iteration:");
-				System.out.println(numberOfITeration);
+//				System.out.println(tree.numberOfIterations);
+//				if(numberOfITeration==8) {
+					System.out.println("GraphViz string");
+					System.out.println(tree.graphvizStringTree());
+//				}
+					System.out.println("\n\n\n\n\n iteration:");
+					System.out.println(numberOfITeration);
 			};
 			long endTime = System.currentTimeMillis();
 			System.out.println(tree);
