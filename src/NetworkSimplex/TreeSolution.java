@@ -134,10 +134,8 @@ public class TreeSolution {
 		updateLTU(leavingArc, enteringArc);
 //		System.out.println("updateFairPrices");
 //		updateFairPrices(leavingArc, enteringArc);
-		System.out.println("updateThreadPredDepth");
-		updateThreadPredDepth(enteringArc, leavingArc);
-		System.out.println("updateFairPrices");
-		updateFairPrices(leavingArc, enteringArc);
+		System.out.println("updateThreadPredDepthFairPrices");
+		updateThreadPredDepthFairPrices(enteringArc, leavingArc);
 
 		System.out.println("\nleavingarc:");
 		System.out.println(leavingArc);
@@ -161,42 +159,6 @@ public class TreeSolution {
 		}
 	}
 
-	/**
-	 * 
-	 * @param leavingArc
-	 * @param orientation
-	 *            true if the arc is directed toward the root, false if it is
-	 *            directed away from the root
-	 */
-	private void updateFairPrices(Arc leavingArc, Arc enteringArc) {
-		if(leavingArc == enteringArc) return;
-		double sign;
-		// enteringArc from T1 to T2
-		if (thread[enteringArc.getStartNodeIndex()] < thread[enteringArc
-				.getEndNodeIndex()])
-			sign = 1;
-		else
-			sign = -1;
-
-		double ce = enteringArc.getReducedCosts();
-		int f1, f2;
-		if (depthArray[leavingArc.getStartNodeIndex()] < depthArray[leavingArc
-				.getEndNodeIndex()]) {
-			f1 = leavingArc.getStartNodeIndex();
-			f2 = leavingArc.getEndNodeIndex();
-		} else {
-			f1 = leavingArc.getEndNodeIndex();
-			f2 = leavingArc.getStartNodeIndex();
-		}
-		assert depthArray[f2] == depthArray[f1] + 1 : "initializing of f1 and f2 in updateFairPrices is wrong";
-		// change the above!!!
-		int k = f2;
-		fairPrices[k] = fairPrices[k] + sign * ce;
-		while (depthArray[thread[k]] > depthArray[f2]) {
-			k = thread[k];
-			fairPrices[k] = fairPrices[k] + sign * ce;
-		}
-	}
 
 	/**
 	 * a method to update the thread-array
@@ -207,10 +169,11 @@ public class TreeSolution {
 	 *            The leaving arc in the current iteration
 	 */
 
-	private void updateThreadPredDepth(Arc enteringArc, Arc leavingArc) {
+	private void updateThreadPredDepthFairPrices(Arc enteringArc, Arc leavingArc) {
 		if(enteringArc == leavingArc) return;
 		int node, e1, e2, f1, f2, a, b, i, j, k, r;
-//		int sign
+		int sign;
+		double ce = enteringArc.getReducedCosts();
 
 		// f has the two endpoints f1 and f2 with f2 is in S and f1 is not in S
 		// (that would be the case when d(f2) > d(f1) )
@@ -234,10 +197,12 @@ public class TreeSolution {
 		if (node == f2) {
 			e2 = enteringArc.getStartNodeIndex();
 			e1 = enteringArc.getEndNodeIndex();
+			sign = -1;
 			
 		} else {
 			e1 = enteringArc.getStartNodeIndex();
 			e2 = enteringArc.getEndNodeIndex();
+			sign = 1;
 		}
 
 		// 1. initialize
@@ -252,11 +217,13 @@ public class TreeSolution {
 		int c = depthArray[e1] - depthArray[e2] +1;
 		
 		this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i ( = v1 = e2)
+		this.fairPrices[i] = fairPrices[i] + sign * ce;
 		// 2. finding the last node k in S_1 and initialize the value of r
 		k = i;
 		while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 			k = this.thread[k];
 			this.depthArray[k] = this.depthArray[k] + c;	//update depthArray in S1 except for v1
+			this.fairPrices[k] = fairPrices[k] + sign * ce;
 		}
 		r = this.thread[k];
 
@@ -276,11 +243,13 @@ public class TreeSolution {
 			//update c (the constant used to update depthArray)
 			c = c +2;
 			this.depthArray[i] = this.depthArray[i] + c;	//update depthArray in i
+			this.fairPrices[i] = fairPrices[i] + sign * ce;
 			// 5. find the last node k in the left part of S_t
 			k = i;
 			while (this.thread[k] != j) {
 				k = this.thread[k];
 				this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the left part of S_t
+				this.fairPrices[k] = fairPrices[k] + sign * ce;
 			}
 
 			// 6. if the right part of S_t is not empty we update thread(k) and
@@ -291,6 +260,7 @@ public class TreeSolution {
 				while (this.depthArray[this.thread[k]] + c > this.depthArray[i]) {		//same here
 					k = this.thread[k];		
 					this.depthArray[k] = this.depthArray[k] +c;	//update depthArray in the right part of S_t
+					this.fairPrices[k] = fairPrices[k] + sign * ce;
 				}
 			//i put this inside the if statement...?
 			r = this.thread[k];
