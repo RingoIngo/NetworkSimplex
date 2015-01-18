@@ -14,10 +14,10 @@ public class TreeSolution {
 	private int[] thread; // corresponds to the preorder array from the tutorial
 
 	// the partition where flow equals lower cap
-	private AdjacencyList L; // not sure yet which arc type we will use
+	public AdjacencyList L; // not sure yet which arc type we will use
 
 	// /the partition where flow equals upper cap
-	private AdjacencyList U;
+	public AdjacencyList U;
 
 	// will prob get deleted soon and replaced by some array that store flow,cap
 	// and so on;
@@ -143,7 +143,57 @@ public class TreeSolution {
 		System.out.println("\nleavingarc:");
 		System.out.println(leavingArc);
 		System.out.println(this.toString());
+		assertReducedCostZeroInTree();
+		assertEachNodeInThreadOnlyVisitedOnce();
+		assertDepthOfSuccesorGreater();
 		return true;
+	}
+	
+	public boolean solutionFeasable(){
+		Iterator<Arc> iterator = this.Tree.iterator();
+		Arc arc;
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			if(arc.getStartNodeIndex()==0||arc.getEndNodeIndex()==0)
+				if(arc.getFlow()!=0)
+					return false;
+		}
+		iterator = this.U.iterator();
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			if(arc.getStartNodeIndex()==0||arc.getEndNodeIndex()==0)
+				return false;
+		}
+		return true;
+	}
+	private void assertDepthOfSuccesorGreater(){
+		for(int i=1; i<this.predecessorArray.length; i++){
+			assert this.depthArray[this.predecessorArray[i]] +1 == this.depthArray[i] : "sth wrong with depthArray";
+		}
+			 
+	}
+	
+	private void assertEachNodeInThreadOnlyVisitedOnce(){
+		//array is initialized with false
+		boolean[] visited = new boolean[this.thread.length];
+		for(int i=0; i<thread.length; i++){
+			assert visited[this.thread[i]] == false:"sth wrong with thread";
+			visited[this.thread[i]]= true;	
+		}
+	}
+	
+	private void assertReducedCostZeroInTree(){
+		Iterator<Arc> iterator = this.Tree.iterator();
+		Arc arc;
+		int startnode, endnode;
+		while(iterator.hasNext()){
+			arc = iterator.next();
+			startnode = arc.getStartNodeIndex();
+			endnode = arc.getEndNodeIndex();
+			arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
+					- fairPrices[endnode]);
+			assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
+		}
 	}
 
 	private void updateLTU(Arc leavingArc, Arc enteringArc) {
@@ -153,7 +203,7 @@ public class TreeSolution {
 			L.removeEdge(enteringArc);
 		else
 			U.removeEdge(enteringArc);
-
+		assert leavingArc.getFlow() == leavingArc.getUpperLimit()||leavingArc.getFlow() == leavingArc.getLowerLimit() :"leavingArc did not reach upper or lower cap!";
 		if (leavingArc.getFlow() == leavingArc.getUpperLimit())
 			U.addEdge(leavingArc);
 		else {
@@ -191,7 +241,7 @@ public class TreeSolution {
 
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S
 		node = enteringArc.getStartNodeIndex();
-		; // check if the startnode is in S
+		 // check if the startnode is in S
 		while ((node != f2) && (node != 0)) { // if node is in S then there is
 												// a path from node to f2 on the
 												// way from e to the root

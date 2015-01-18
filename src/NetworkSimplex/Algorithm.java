@@ -1,6 +1,7 @@
 package NetworkSimplex;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class Algorithm {
 	
@@ -28,9 +29,11 @@ public class Algorithm {
 			System.out.println("\nthe costs of this soultion are:");
 			System.out.println("the way the costs are calculated might be wrong, so dont really rely on that. method was written late at night:)");
 			System.out.println(tree.getCosts());
+			assertOptimal(tree);
 			System.out.println("That took " + (endTime - startTime) + " milliseconds");
 			//maybe write the solution now to a file or so
-			
+			System.out.println("solution is feasable:");
+			System.out.println(tree.solutionFeasable());
 //			System.out.println("\033[0;0mhallo\033[0;1m");
 			
 		} catch (IOException e) {
@@ -38,6 +41,17 @@ public class Algorithm {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private static void assertOptimal(TreeSolution tree){
+		Iterator<Arc> iterator = tree.L.iterator();
+		while(iterator.hasNext()){
+			assert iterator.next().getReducedCosts() >= 0;
+		}
+		iterator = tree.U.iterator();
+		while(iterator.hasNext()){
+			assert iterator.next().getReducedCosts() <= 0;
+		}
 	}
 
 }
