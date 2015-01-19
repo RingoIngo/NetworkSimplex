@@ -71,6 +71,16 @@ public class AdjacencyList implements Iterable<Arc> {
 		return iterator;
 	}
 	
+	/**
+	 * an iterator starting at the specified node index
+	 * @param nodeIndex
+	 * @return
+	 */
+	public Iterator<Arc> iterator(int nodeIndex){
+		AdjListIterator iterator = new AdjListIterator(nodeIndex, this.adjList);
+		return iterator;
+	}
+	
 	public String toString() {
 		StringBuffer string = new StringBuffer("AdjacencyList:\nNumber of Nodes: ");
 		string.append(adjList.length);

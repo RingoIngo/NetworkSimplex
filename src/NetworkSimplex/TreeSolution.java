@@ -143,7 +143,7 @@ public class TreeSolution {
 		System.out.println(enteringArc);
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
-		contorlCircle(pathUV);
+		controlCircle(pathUV);
 		System.out.println("\nEpsilon:");
 		System.out.println(epsilon);
 		System.out.println("changeFlowFindLeavingArc:");
@@ -164,8 +164,12 @@ public class TreeSolution {
 		assertPred();
 		return true;
 	}
-
-	private void contorlCircle(LinkedList<FlowFinderObject> pathUV){
+	/**
+	 * checks if the cycle is actually a cycle and if the orientations
+	 * if the arcs in it are correct
+	 * @param pathUV
+	 */
+	private void controlCircle(LinkedList<FlowFinderObject> pathUV){
 		Iterator<FlowFinderObject> iterator2 = pathUV.iterator();
 		FlowFinderObject object1 = iterator2.next();
 		int join, scheitel;
@@ -197,6 +201,10 @@ public class TreeSolution {
 			}
 		}
 	}
+	/**
+	 * tests if the solution still contains artificial arcs
+	 * @return
+	 */
 	public boolean solutionFeasable(){
 		Iterator<Arc> iterator = this.Tree.iterator();
 		Arc arc;
@@ -220,13 +228,20 @@ public class TreeSolution {
 		}
 		return true;
 	}
+	
+	/**
+	 * tests if the statement d(p(i)) +1 == d(i) holds for all nodes
+	 */
 	private void assertDepthOfSuccesorGreater(){
 		for(int i=1; i<this.predecessorArray.length; i++){
 			assert this.depthArray[this.predecessorArray[i]] +1 == this.depthArray[i] : "sth wrong with depthArray";
 		}
 
 	}
-
+	/**
+	 * asserts that each node is only visited once when performing 
+	 * a depth first search with thread array
+	 */
 	private void assertEachNodeInThreadOnlyVisitedOnce(){
 		//array is initialized with false
 		boolean[] visited = new boolean[this.thread.length];
@@ -235,7 +250,9 @@ public class TreeSolution {
 			visited[this.thread[i]]= true;	
 		}
 	}
-	
+	/**
+	 * tests if the reduced costs of all arcs in T are zero
+	 */
 	private void assertReducedCostZeroInTree(){
 		Iterator<Arc> iterator = this.Tree.iterator();
 		Arc arc;
@@ -250,6 +267,12 @@ public class TreeSolution {
 		}
 	}
 
+	/**
+	 * adds the entering arc to T and removes it from L/U
+	 * and deletes the leaving arc from T and adds it to L/U
+	 * @param leavingArc
+	 * @param enteringArc
+	 */
 	private void updateLTU(Arc leavingArc, Arc enteringArc) {
 		Tree.addEdge(enteringArc);
 		Tree.removeEdge(leavingArc);
@@ -510,7 +533,16 @@ public class TreeSolution {
 		return arcPathU;
 
 	}
-
+	
+	/**
+	 * finds out the orientation of edge {u,Pu} in the cycle
+	 * and how much the flow can be increased/decreased
+	 * @param u
+	 * @param Pu
+	 * @param uWasStart
+	 * @param forwardBefore
+	 * @return
+	 */
 	private FlowFinderObject getPossibleFlowChange(int u, int Pu,
 			boolean uWasStart, boolean forwardBefore) {
 		Arc leavingArc = Tree.getEdgeInTree(u, Pu);
