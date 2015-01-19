@@ -14,6 +14,8 @@ public class Algorithm {
 			int numberOfITeration=0;
 			System.out.println("\n\n\n\n\n iteration:");
 			System.out.println(numberOfITeration);
+			System.out.println(tree);
+			System.out.println(tree.graphvizStringTree());
 			while(tree.iterate()){
 				++numberOfITeration;
 //				System.out.println(tree.numberOfIterations);
@@ -34,7 +36,8 @@ public class Algorithm {
 			//maybe write the solution now to a file or so
 			System.out.println("solution is feasable:");
 			System.out.println(tree.solutionFeasable());
-//			System.out.println("\033[0;0mhallo\033[0;1m");
+			System.out.println("UWasNotEmptyBefore:");
+			System.out.println(tree.UWasNotEmptyBefore);
 			
 		} catch (IOException e) {
 			System.out.println("file not found");

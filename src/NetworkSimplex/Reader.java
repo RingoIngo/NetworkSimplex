@@ -68,10 +68,10 @@ public class Reader {
 
 							
 				//add arc to L partition
-				L.addEdge(arc); //and this seems to be also quite time consuming
+				L.addEdge(arc); 
 				
 				
-				if(arc.getLowerLimit() > 0){		//this code snippet takes A LOT OF TIME!!!
+				if(arc.getLowerLimit() > 0){		
 					//update nettodemands of nodes
 					if(nodes[startNodeIndex] == null){
 						Node node = new Node(startNodeIndex, 0);
