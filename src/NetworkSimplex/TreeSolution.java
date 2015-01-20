@@ -28,6 +28,8 @@ public class TreeSolution {
 	// in the script referred to as y
 	private double[] fairPrices;
 
+	private EnteringArcFinderCandidatesPivotRule enteringArcFinder;
+	
 	// eine krücke
 	private double epsilon;
 
@@ -35,6 +37,7 @@ public class TreeSolution {
 	public int numberOfIterations=0;
 	public boolean UWasNotEmptyBefore = false;
 	public boolean backwardEdge = false;
+	
 
 	/**
 	 * this constructor uses the information that the Reader class connects from
@@ -121,6 +124,7 @@ public class TreeSolution {
 		}
 		// System.out.print(this.graphvizStringTree());
 		// System.out.print(this.graphvizStringTLU());
+		this.enteringArcFinder = new EnteringArcFinderCandidatesPivotRule(40,20);
 	}
 
 	/**
@@ -135,8 +139,9 @@ public class TreeSolution {
 
 		// dont init each time
 		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-		//		EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();
+//		//EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();	//this method is slower with standard1
 		EnteringArcObject enteringArcObject = finderFirstRule.getMaxEnteringArcObject();
+//		EnteringArcObject enteringArcObject = enteringArcFinder.getEnteringArc();
 		if(enteringArcObject == null) return false; //no more entering arcs can be found 
 		Arc enteringArc = enteringArcObject.getEnteringArc();
 		System.out.println("Arc (found by first rule class: )");
@@ -183,7 +188,7 @@ public class TreeSolution {
 			if(join == object.leavingArc.getStartNodeIndex()){
 				assert object.forwardEdge;
 				join = object.leavingArc.getEndNodeIndex();
-				}
+			}
 			else if(join == object.leavingArc.getEndNodeIndex()){
 				join = object.leavingArc.getStartNodeIndex();
 				assert !object.forwardEdge;
@@ -228,7 +233,7 @@ public class TreeSolution {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * tests if the statement d(p(i)) +1 == d(i) holds for all nodes
 	 */
@@ -448,7 +453,7 @@ public class TreeSolution {
 		FlowFinderObject flowFinder;
 		boolean forwardBefore = enteringArc.getReducedCosts() < 0 ? true
 				: false;
-		boolean uWasStart = indexU == u ? true : false;
+		boolean uWasStart = indexU == u;
 
 		boolean addUFirst;
 		if (forwardBefore) {
@@ -493,7 +498,7 @@ public class TreeSolution {
 
 		boolean forwardBeforeV = enteringArc.getReducedCosts() < 0 ? true
 				: false;
-		boolean vWasStart = indexU == v ? true : false;
+		boolean vWasStart = indexU == v;
 		// climb up on both paths until join is reached
 		while (u != v) {
 
@@ -533,7 +538,7 @@ public class TreeSolution {
 		return arcPathU;
 
 	}
-	
+
 	/**
 	 * finds out the orientation of edge {u,Pu} in the cycle
 	 * and how much the flow can be increased/decreased
@@ -605,7 +610,7 @@ public class TreeSolution {
 	private class EnteringArcFinderCandidatesPivotRule {
 		// list of candidates, in order to not search for new arcs in each
 		// iteration
-		private LinkedList<Arc> candidates = new LinkedList<Arc>();
+		private LinkedList<EnteringArcObject> candidates = new LinkedList<EnteringArcObject>();
 		// number of arcs that will be put in the list when it is refreshed
 		private int filledListSize;
 		// numbe of arcs we will choose after the rule of the best merit from
@@ -613,7 +618,10 @@ public class TreeSolution {
 		private int iterations;
 		// true if there are not enough arcs left to fill the list with the
 		// requested number of arcs
-		private boolean noMorecandidates;
+		private boolean phase1= true;
+
+		private int startSearchNodeIndex=0;
+		private boolean isL = true;
 
 		/**
 		 * this constructor returns an instance of the e-Arc-Finder that uses
@@ -623,11 +631,8 @@ public class TreeSolution {
 		public EnteringArcFinderCandidatesPivotRule() {
 			this.filledListSize = 1;
 			this.iterations = 1;
-			this.candidates = findCandidatesForEnteringArc(true,
-					this.filledListSize);
-			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true
-					: false;
-
+			//we start the search in node 0 in L
+			this.candidates = findCandidatesForEnteringArc();
 		}
 
 		/**
@@ -643,13 +648,8 @@ public class TreeSolution {
 				int iterations) {
 			this.filledListSize = filledListSize;
 			this.iterations = iterations;
-			this.candidates = findCandidatesForEnteringArc(true,
-					this.filledListSize); // when this class is instantiated it
-			// is the first run
-			this.noMorecandidates = this.candidates.size() < this.filledListSize ? true
-					: false; // if the returned list doesnt contain as many arcs
-			// as we wanted that means that there are not enough candidates
-			// anymore to fullfil the request
+			this.candidates = findCandidatesForEnteringArc(); 
+
 		}
 
 		// there will prob be problems when we run out of arcs
@@ -657,26 +657,79 @@ public class TreeSolution {
 		 * 
 		 * @return the entering arc
 		 */
-		public Arc getEnteringArc() {
-			if (noMorecandidates && this.candidates.isEmpty())
-				return null;
-			if (!noMorecandidates
-					|| this.candidates.size() <= this.filledListSize
-					- this.iterations) {
-				this.candidates = findCandidatesForEnteringArc(false,
-						filledListSize);
-				this.noMorecandidates = this.candidates.size() < this.filledListSize ? true
-						: false;
+		public EnteringArcObject getEnteringArc() {
+			if(!phase1) return new EnteringArcFinderFirstRule().getEnteringArcObject();
+			Arc dummyArc = new Arc(0, 0, 0, 0, 0, 0); //a dummy
+			dummyArc.setReducedCosts(0);
+			EnteringArcObject candidate = new EnteringArcObject(dummyArc, false, false); //a dummy
+			Iterator<EnteringArcObject> candIterator;
+			EnteringArcObject arcObject;
+			Arc enteringArc;
+			int index = 0;	//counter
+			int removeIndex = index;;
+			for(int i=1; i<=2;i++){
+				candIterator = this.candidates.iterator();
+				while(candIterator.hasNext()){
+					arcObject = candIterator.next();
+					enteringArc = arcObject.getEnteringArc();
+					++index;
+					enteringArc.setReducedCosts(updateRedCostsOfOneArc(enteringArc));//update list entry before compare
+					if(enteringArc.getReducedCosts()<0 && candidate.isL() || enteringArc.getReducedCosts() > 0 && candidate.isU()){
+						if(Math.abs(enteringArc.getReducedCosts())>Math.abs(enteringArc.getReducedCosts())){
+							candidate = arcObject;
+							removeIndex = index;
+						}
+					}
+				}
+				//if arc is not dummy anymore
+				if (candidate.getEnteringArc().getUpperLimit()!=0){
+					this.candidates.remove(removeIndex);
+					//if we need new arcs --> refresh
+					if(this.candidates.size() < this.filledListSize - this.iterations){
+						this.candidates = findCandidatesForEnteringArc();
+					}
+					return candidate;
+				}
+				else 
+					this.candidates = findCandidatesForEnteringArc();
 			}
-			/**
-			 * here we have to find the max value and at the same time aupdate
-			 * the list bcz there might be candidates in the list that do not
-			 * reduce the costs anymore due to updates in previous iterations
-			 */
-			return this.candidates.pop(); // this doesnt give back the ARc with
-			// the best merit yet, but will soon
-			// therefore the datastructre LinkedList will prob be exchanged
-			// against a treeset
+			return new EnteringArcFinderFirstRule().getEnteringArcObject();
+		}
+
+		/**
+		 * 
+		 * @param filledListSize number of provided candidates
+		 * @param startSearchNodeIndex
+		 * @return
+		 */
+		LinkedList<EnteringArcObject> findCandidatesForEnteringArc() {
+			if(startSearchNodeIndex>= predecessorArray.length) startSearchNodeIndex =0;
+			LinkedList<EnteringArcObject> candidates = new LinkedList<EnteringArcObject>();
+			//init where we want to start the search
+			Iterator<Arc> iterator = isL? L.iterator(startSearchNodeIndex) : U.iterator(startSearchNodeIndex);
+			Arc arc;
+			//we do that three times
+			//first from where we left, then the complete other list and then the first one again
+			//bcz we might have skipped the beginning
+			for(int i = 1; i<=3; i++){
+				while(iterator.hasNext()){
+					arc = iterator.next();
+					//update reduced costs
+					arc.setReducedCosts(updateRedCostsOfOneArc(arc));
+					if((arc.getReducedCosts()<0 && isL) || (arc.getReducedCosts() > 0 && !isL))
+						candidates.add(new EnteringArcObject(arc, isL, !isL));
+					if(candidates.size() == this.filledListSize) {
+						this.startSearchNodeIndex = arc.getStartNodeIndex()+1;
+						return candidates;
+					}
+				}
+				isL=!isL;
+				//search in the other partition and start at node 0
+				iterator = isL? L.iterator(0) : U.iterator(0);
+			}
+			//list is not full
+			this.phase1 = false;
+			return candidates;
 
 		}
 	}
@@ -707,8 +760,6 @@ public class TreeSolution {
 		}
 
 		private EnteringArcObject getMaxEnteringArcObject(){
-			int startnode;
-			int endnode;
 			Arc maxArc = new Arc(0, 0, 0, 0, 0, 0);//create dummy arc with reduced costs zero
 			maxArc.setReducedCosts(0);
 			boolean L = false;
@@ -716,21 +767,16 @@ public class TreeSolution {
 
 			while (LIterator.hasNext()) {
 				arc = LIterator.next();
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode] - fairPrices[endnode]);
+				arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 				if (arc.getReducedCosts() < maxArc.getReducedCosts()){
 					maxArc = arc;
 					L = true;
 					U = false;
 				}
 			}
-			//TODO: assert L is empty --> if maxArc.getReducedCosts == 0
 			while (UIterator.hasNext()) {
 				arc = UIterator.next();
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]- fairPrices[endnode]);
+				arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 				if (arc.getReducedCosts() > Math.abs(maxArc.getReducedCosts())){
 					maxArc = arc;
 					L = false;
@@ -746,21 +792,15 @@ public class TreeSolution {
 		}
 
 		private EnteringArcObject getEnteringArcObject() {
-			int startnode;
-			int endnode;
 			while (LIterator.hasNext()) {
 				arc = LIterator.next();
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode] - fairPrices[endnode]);
+				arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 				if (arc.getReducedCosts() < 0)
 					return new EnteringArcObject(arc, true, false);
 			}
 			while (UIterator.hasNext()) {
 				arc = UIterator.next();
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]- fairPrices[endnode]);
+				arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 				if (arc.getReducedCosts() > 0)
 					return new EnteringArcObject(arc, false, true);
 			}
@@ -769,49 +809,6 @@ public class TreeSolution {
 		}
 	}
 
-	/**
-	 * 
-	 * @param firstRun
-	 * @param r
-	 * @return
-	 */
-	LinkedList<Arc> findCandidatesForEnteringArc(boolean firstRun, int r) { // r
-		// is
-		// the
-		// number
-		// of
-		// candidates
-		// that
-		// we
-		// ll
-		// provide
-		// in
-		// this
-		// call
-		LinkedList<Arc> candidates = new LinkedList<Arc>();
-		int i = 0;
-		for (Arc arc : L) {
-			int startnode;
-			int endnode;
-			if (firstRun) {
-				/**
-				 * reduced costs are initialized here
-				 */
-				startnode = arc.getStartNodeIndex();
-				endnode = arc.getEndNodeIndex();
-				arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
-						- fairPrices[endnode]);
-			}
-			if (arc.getReducedCosts() < 0) {
-				candidates.add(arc);
-				i++;
-			}
-			if (i == r)
-				break;
-		}
-		return candidates;
-
-	}
 
 	private Arc changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle,
 			double epsilon) {
@@ -850,6 +847,17 @@ public class TreeSolution {
 		//		assert !leavingArcFlowFinder.forwardEdge : "this edge should be in U "+ leavingArcFlowFinder;
 		//		assert leavingArcFlowFinder.leavingArc.getFlow() == 0;
 		return leavingArc;
+	}
+
+	/**
+	 * 
+	 * @param arc
+	 * @return
+	 */
+	public double updateRedCostsOfOneArc(Arc arc){
+		int startnode = arc.getStartNodeIndex();
+		int endnode = arc.getEndNodeIndex();
+		return arc.getCost() + fairPrices[startnode] - fairPrices[endnode];
 	}
 
 	/**
