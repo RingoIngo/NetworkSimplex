@@ -44,6 +44,10 @@ public class TreeSolution {
 	public int numberOfIterations = 0;
 	public boolean UWasNotEmptyBefore = false;
 	public boolean backwardEdge = false;
+	
+	public AdjacencyList getTree(){
+		return this.Tree;
+	}
 
 	/**
 	 * this constructor uses the information that the Reader class connects from
