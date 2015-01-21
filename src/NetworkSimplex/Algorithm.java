@@ -30,8 +30,8 @@ public class Algorithm {
 			System.out.println("That took " + (endTime - startTime) + " milliseconds");
 			System.out.println("solution is feasable:");
 			System.out.println(tree.solutionFeasable());	// checks if the tree solution is feasable (no flow on artificial arcs)
-			System.out.println("UWasNotEmptyBefore:");
-			System.out.println(tree.UWasNotEmptyBefore);	// gives us the information if U was empty anytime before
+//			System.out.println("UWasNotEmptyBefore:");
+//			System.out.println(tree.UWasNotEmptyBefore);	// gives us the information if U was empty anytime before
 
 		} catch (IOException e) {
 			System.out.println("file not found");
@@ -40,6 +40,11 @@ public class Algorithm {
 
 	}
 
+	/**
+	 * Checks if all arcs in L have reduced costs < 0 and if all arcs in U have reduced costs > 0. 
+	 * Then the tree solution is optimal
+	 * @param tree
+	 */
 	private static void assertOptimal(TreeSolution tree){
 		Iterator<Arc> iterator = tree.L.iterator();
 		while(iterator.hasNext()){
