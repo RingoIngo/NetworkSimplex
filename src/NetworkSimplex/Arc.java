@@ -1,4 +1,4 @@
-package NetworkSimplex;
+	package NetworkSimplex;
 
 public class Arc {
 	

@@ -15,25 +15,23 @@ public class Algorithm {
 			System.out.println("\n\n\n\n\n iteration:");
 			System.out.println(numberOfITeration);
 			System.out.println(tree);
-//			System.out.println(tree.graphvizStringTree());
-			while(tree.iterate()){
-				++numberOfITeration;
+			while(tree.iterate()){	// iterate while there is a entering arc
+				++numberOfITeration;	// count number of iterations
 //				System.out.println("GraphViz string");
-//				System.out.println(tree.graphvizStringTree());
+//				System.out.println(tree.graphvizStringTree()); // to print the Tree for graph viz
 				System.out.println("\n\n\n\n\n iteration:");
 				System.out.println(numberOfITeration);
 			};
 			long endTime = System.currentTimeMillis();
 			System.out.println(tree);
-			System.out.println("\nthe costs of this soultion are:");
+			System.out.println("\nthe costs of this solution are:");
 			System.out.println(tree.getCosts());
-//			assertOptimal(tree);
+//			assertOptimal(tree);	// check if the tree solution is optimal
 			System.out.println("That took " + (endTime - startTime) + " milliseconds");
-			//maybe write the solution now to a file or so
 //			System.out.println("solution is feasable:");
-//			System.out.println(tree.solutionFeasable());
+//			System.out.println(tree.solutionFeasable());	// checks if the tree solution is feasable (no flow on artificial arcs)
 //			System.out.println("UWasNotEmptyBefore:");
-//			System.out.println(tree.UWasNotEmptyBefore);
+//			System.out.println(tree.UWasNotEmptyBefore);	// gives us the information if U was empty anytime before
 
 		} catch (IOException e) {
 			System.out.println("file not found");
@@ -42,6 +40,11 @@ public class Algorithm {
 
 	}
 
+	/**
+	 * Checks if all arcs in L have reduced costs < 0 and if all arcs in U have reduced costs > 0. 
+	 * Then the tree solution is optimal
+	 * @param tree
+	 */
 	private static void assertOptimal(TreeSolution tree){
 		Iterator<Arc> iterator = tree.L.iterator();
 		while(iterator.hasNext()){
