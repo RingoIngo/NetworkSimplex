@@ -27,13 +27,13 @@ public class Algorithm {
 			System.out.println(tree);
 			System.out.println("\nthe costs of this soultion are:");
 			System.out.println(tree.getCosts());
-			assertOptimal(tree);
+//			assertOptimal(tree);
 			System.out.println("That took " + (endTime - startTime) + " milliseconds");
 			//maybe write the solution now to a file or so
-			System.out.println("solution is feasable:");
-			System.out.println(tree.solutionFeasable());
-			System.out.println("UWasNotEmptyBefore:");
-			System.out.println(tree.UWasNotEmptyBefore);
+//			System.out.println("solution is feasable:");
+//			System.out.println(tree.solutionFeasable());
+//			System.out.println("UWasNotEmptyBefore:");
+//			System.out.println(tree.UWasNotEmptyBefore);
 
 		} catch (IOException e) {
 			System.out.println("file not found");

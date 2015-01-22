@@ -137,36 +137,36 @@ public class TreeSolution {
 		// EnteringArcFinderCandidatesPivotRule();
 		// Arc2 enteringArc = finderPivotRule.getEnteringArc();
 
-		// dont init each time
-		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
-//		//EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();	//this method is slower with standard1
-		EnteringArcObject enteringArcObject = finderFirstRule.getMaxEnteringArcObject();
-//		EnteringArcObject enteringArcObject = enteringArcFinder.getEnteringArc();
+//		// dont init each time
+//		EnteringArcFinderFirstRule finderFirstRule = new EnteringArcFinderFirstRule();
+////		//EnteringArcObject enteringArcObject = finderFirstRule.getEnteringArcObject();	//this method is slower with standard1
+//		EnteringArcObject enteringArcObject = finderFirstRule.getMaxEnteringArcObject();
+		EnteringArcObject enteringArcObject = enteringArcFinder.getEnteringArc();
 		if(enteringArcObject == null) return false; //no more entering arcs can be found 
 		Arc enteringArc = enteringArcObject.getEnteringArc();
-		System.out.println("Arc (found by first rule class: )");
-		System.out.println(enteringArc);
+//		System.out.println("Arc (found by first rule class: )");
+//		System.out.println(enteringArc);
 
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
-		controlCircle(pathUV);
-		System.out.println("\nEpsilon:");
-		System.out.println(epsilon);
-		System.out.println("changeFlowFindLeavingArc:");
+//		controlCircle(pathUV);
+//		System.out.println("\nEpsilon:");
+//		System.out.println(epsilon);
+//		System.out.println("changeFlowFindLeavingArc:");
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
-		System.out.println("updateLTU");
+//		System.out.println("updateLTU");
 		updateLTU(leavingArc, enteringArc);
 		//		System.out.println("updateFairPrices");
 		//		updateFairPrices(leavingArc, enteringArc);
-		System.out.println("updateThreadPredDepthFairPrices");
+//		System.out.println("updateThreadPredDepthFairPrices");
 		updateThreadPredDepthFairPrices(enteringArc, leavingArc);
 
-		System.out.println("\nleavingarc:");
-		System.out.println(leavingArc);
-		System.out.println(this.toString());
-		assertReducedCostZeroInTree();
-		assertEachNodeInThreadOnlyVisitedOnce();
-		assertDepthOfSuccesorGreater();
-		assertPred();
+//		System.out.println("\nleavingarc:");
+//		System.out.println(leavingArc);
+//		System.out.println(this.toString());
+//		assertReducedCostZeroInTree();
+//		assertEachNodeInThreadOnlyVisitedOnce();
+//		assertDepthOfSuccesorGreater();
+//		assertPred();
 		return true;
 	}
 	/**
@@ -658,20 +658,20 @@ public class TreeSolution {
 		 * @return the entering arc
 		 */
 		public EnteringArcObject getEnteringArc() {
+			assert phase1;
 			if(!phase1) return new EnteringArcFinderFirstRule().getEnteringArcObject();
 			Arc dummyArc = new Arc(0, 0, 0, 0, 0, 0); //a dummy
 			dummyArc.setReducedCosts(0);
 			EnteringArcObject candidate = new EnteringArcObject(dummyArc, false, false); //a dummy
 			Iterator<EnteringArcObject> candIterator;
 			EnteringArcObject arcObject;
-			Arc enteringArc;
 			int index = 0;	//counter
 			int removeIndex = index;;
 			for(int i=1; i<=2;i++){
 				candIterator = this.candidates.iterator();
 				while(candIterator.hasNext()){
 					arcObject = candIterator.next();
-					enteringArc = arcObject.getEnteringArc();
+					Arc enteringArc = arcObject.getEnteringArc();
 					++index;
 					enteringArc.setReducedCosts(updateRedCostsOfOneArc(enteringArc));//update list entry before compare
 					if(enteringArc.getReducedCosts()<0 && candidate.isL() || enteringArc.getReducedCosts() > 0 && candidate.isU()){
@@ -707,13 +707,12 @@ public class TreeSolution {
 			LinkedList<EnteringArcObject> candidates = new LinkedList<EnteringArcObject>();
 			//init where we want to start the search
 			Iterator<Arc> iterator = isL? L.iterator(startSearchNodeIndex) : U.iterator(startSearchNodeIndex);
-			Arc arc;
 			//we do that three times
 			//first from where we left, then the complete other list and then the first one again
 			//bcz we might have skipped the beginning
 			for(int i = 1; i<=3; i++){
 				while(iterator.hasNext()){
-					arc = iterator.next();
+					Arc arc = iterator.next();
 					//update reduced costs
 					arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 					if((arc.getReducedCosts()<0 && isL) || (arc.getReducedCosts() > 0 && !isL))
