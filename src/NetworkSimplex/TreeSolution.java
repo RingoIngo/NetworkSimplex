@@ -160,32 +160,32 @@ public class TreeSolution {
 		if (enteringArcObject == null)
 			return false; // no more entering arcs can be found
 		Arc enteringArc = enteringArcObject.getEnteringArc();
-//		System.out.println("Arc (found by first rule class: )");
-//		System.out.println(enteringArc);
+		// System.out.println("Arc (found by first rule class: )");
+		// System.out.println(enteringArc);
 
 		// finding the path between the nodes of the enterinc arc to identify
 		// the 'scheitel', the whole circle and the epsilon
 		LinkedList<FlowFinderObject> pathUV = findPathBetweenUV(enteringArc);
 		// controlCircle(pathUV); // check if the circle is really a circle
-//		System.out.println("\nEpsilon:");
-//		System.out.println(epsilon);
+		// System.out.println("\nEpsilon:");
+		// System.out.println(epsilon);
 
 		// change the flow on the circle and find meanwhile the leaving arc
-//		System.out.println("changeFlowFindLeavingArc:");
+		// System.out.println("changeFlowFindLeavingArc:");
 		Arc leavingArc = changeFlowFindLeaving(pathUV, epsilon);
 
 		// update the treesolution (move entering arc out of L/U into T and the
 		// leavig arc out of T into L/U)
-//		System.out.println("updateLTU");
+		// System.out.println("updateLTU");
 		updateLTU(leavingArc, enteringArc);
 
 		// update the four arrays thread, pred, depth and fairPrices
-//		System.out.println("updateThreadPredDepthFairPrices");
+		// System.out.println("updateThreadPredDepthFairPrices");
 		updateThreadPredDepthFairPrices(enteringArc, leavingArc);
 
-//		System.out.println("\nleavingarc:");
-//		System.out.println(leavingArc);
-//		System.out.println(this.toString());
+		// System.out.println("\nleavingarc:");
+		// System.out.println(leavingArc);
+		// System.out.println(this.toString());
 		// assertReducedCostZeroInTree();
 		// assertEachNodeInThreadOnlyVisitedOnce();
 		// assertDepthOfSuccesorGreater();
@@ -395,7 +395,7 @@ public class TreeSolution {
 						// root
 		}
 
-		// 1. Initialize
+		// 1. Initialize to connect S* correct
 		a = f1;
 		while (this.thread[a] != f2) { // is the 'thread-predecessor' of f2
 			a = this.thread[a]; // the thread of a will be the last r
@@ -461,7 +461,7 @@ public class TreeSolution {
 			}
 
 			// 6. if the right part of S_t is not empty we update thread(k) and
-			// search the last node k in S_t
+			// search the last node k in the right part of S_t
 			// At the end we update r.
 
 			// we add the constant added to depthArray[i] also to depthArray[r]
@@ -502,8 +502,15 @@ public class TreeSolution {
 	}
 
 	/**
-	 * this method finds a path between the nodes with indexU and indexV it is
-	 * used to find the cycle in the tree after adding the entering arc
+	 * This method finds a path between the nodes with indexU and indexV. It is
+	 * used to find the circle in the tree after adding the entering arc. We
+	 * create the circle by putting all arcs from the 'scheitel' to the
+	 * startnode on left side of the entering arc in a list and all arcs from
+	 * the endnode to the 'scheitel' on the right side. So if we go from the
+	 * beginning to the end of the list, we will see the arcs from the
+	 * 'scheitel' to the startnode at first and then the arcs from the endnode
+	 * to the 'scheitel'. Meanwhile the method determines the changing flow
+	 * epsilon.
 	 * 
 	 * @param indexU
 	 * @param indexV
@@ -513,30 +520,41 @@ public class TreeSolution {
 		int indexU = enteringArc.getStartNodeIndex();
 		int indexV = enteringArc.getEndNodeIndex();
 
+		// create our List for a circle
 		LinkedList<FlowFinderObject> arcPathU = new LinkedList<FlowFinderObject>();
 
-		// maybe use another datastructure here, like a stack or so
 		ArrayList<Integer> pathU = new ArrayList<Integer>();
-		// ArrayList<Integer> pathV = new ArrayList<Integer>();
 		Stack<Integer> pathV = new Stack<Integer>();
-		// the flow change epsilon
-		// double epsilon = Double.POSITIVE_INFINITY;
 
 		// initialize so that u is the index with the greater depth
 		int u, v;
 		if (depthArray[indexU] >= depthArray[indexV]) {
-			u = indexU;
+			u = indexU; // because d(indexU) >= d(indexV)
 			v = indexV;
 		} else {
 			u = indexV;
 			v = indexU;
 		}
 
+		/**
+		 * FlowFinderObjects are used to save a arcs on the circle, the
+		 * direction of it (depending on the leaving arc) and the epsilon we can
+		 * achieve with this leaving arc
+		 */
 		FlowFinderObject flowFinder;
+		// negative reduced costs -> entering Arc out of L,
+		// positive reduced costs -> out of U
 		boolean forwardBefore = enteringArc.getReducedCosts() < 0 ? true
 				: false;
-		boolean uWasStart = indexU == u;
+		boolean uWasStart = (indexU == u); // indexU = startnode, u was start if
+											// u
+		// == indexU
 
+		/**
+		 * if u is the startnode of the entering arc we add all arcs we find on
+		 * the way from u to the 'scheitel' to the beginning of the list.
+		 * Otherwise all arcs on the way from v to the 'scheitel'.
+		 */
 		boolean addUFirst;
 		if (forwardBefore) {
 			if (uWasStart)
@@ -550,32 +568,44 @@ public class TreeSolution {
 				addUFirst = true;
 		}
 
-		// climb up the longer path until level of v is reached
-		double enteringEpsilon;
+		/**
+		 * climb up the longer path until level of v is reached
+		 */
+		double enteringEpsilon; // current epsilon
+
+		// look at the entering arc and initial the epsilon
 		if (forwardBefore)
 			enteringEpsilon = enteringArc.getUpperLimit()
-					- enteringArc.getFlow();
+					- enteringArc.getFlow(); // calculate the changing flow on
+												// the entering arc
 		else
 			enteringEpsilon = enteringArc.getFlow()
-					- enteringArc.getLowerLimit();
+					- enteringArc.getLowerLimit(); // calculate the changing
+													// flow on the entering arc
+
+		// create first FlowFinderObject
 		FlowFinderObject enteringFlowFinderObject = new FlowFinderObject(
 				enteringArc, forwardBefore, enteringEpsilon);
-		arcPathU.add(enteringFlowFinderObject);
+
+		arcPathU.add(enteringFlowFinderObject); // add entering arc to the
+												// circle
 		double epsilon = enteringEpsilon;
-		while (depthArray[u] > depthArray[v]) {
+		while (depthArray[u] > depthArray[v]) { // while u is deeper than v
 			pathU.add(u);
 			flowFinder = getPossibleFlowChange(u, predecessorArray[u],
 					uWasStart, forwardBefore);
-			epsilon = Math.min(epsilon, flowFinder.epsilon);
+			epsilon = Math.min(epsilon, flowFinder.epsilon); // update epsilon
 
+			// check if u was the startnode of the currenct arc to determine the
+			// direction of the next arc
 			uWasStart = flowFinder.leavingArc.getStartNodeIndex() == predecessorArray[u] ? true
 					: false;
 			forwardBefore = flowFinder.forwardEdge;
-			u = predecessorArray[u];
+			u = predecessorArray[u]; // climb up
 			if (addUFirst)
-				arcPathU.addFirst(flowFinder);
+				arcPathU.addFirst(flowFinder); // add to the beginning
 			else
-				arcPathU.add(flowFinder);
+				arcPathU.add(flowFinder); // add to the end
 		}
 
 		boolean forwardBeforeV = enteringArc.getReducedCosts() < 0 ? true
@@ -584,6 +614,10 @@ public class TreeSolution {
 		// climb up on both paths until join is reached
 		while (u != v) {
 
+			/**
+			 * Climb up one arc and create new flowFinderObject for this arc.
+			 * Meanwhile determine the direction and the epsilon
+			 */
 			pathU.add(u);
 			flowFinder = getPossibleFlowChange(u, predecessorArray[u],
 					uWasStart, forwardBefore);
@@ -595,8 +629,11 @@ public class TreeSolution {
 				arcPathU.addFirst(flowFinder);
 			else
 				arcPathU.add(flowFinder);
-			u = predecessorArray[u];
+			u = predecessorArray[u];	// one step up
 
+			/**
+			 * same for v
+			 */
 			pathV.add(v);
 			flowFinder = getPossibleFlowChange(v, predecessorArray[v],
 					vWasStart, forwardBeforeV);
@@ -608,7 +645,7 @@ public class TreeSolution {
 				arcPathU.add(flowFinder);
 			else
 				arcPathU.addFirst(flowFinder);
-			v = predecessorArray[v];
+			v = predecessorArray[v];		// one step up
 		}
 		pathU.add(u);
 		pathU.addAll(pathV);
@@ -617,13 +654,13 @@ public class TreeSolution {
 				.println("\n\n\nthe cycle starting at the scheitel and in orientation direction:");
 		System.out.println(arcPathU);
 
-		this.epsilon = epsilon;
-		return arcPathU;
+		this.epsilon = epsilon;		// final epsilon
+		return arcPathU;		// return the final circle
 
 	}
 
 	/**
-	 * finds out the orientation of edge {u,Pu} in the cycle and how much the
+	 * finds out the orientation of edge {u,Pu} in the circle and how much the
 	 * flow can be increased/decreased
 	 * 
 	 * @param u
@@ -746,16 +783,18 @@ public class TreeSolution {
 		 */
 		public EnteringArcObject getEnteringArc() {
 			assert phase1;
-			if(!phase1) return new EnteringArcFinderFirstRule().getEnteringArcObject();
-			Arc dummyArc = new Arc(0, 0, 0, 0, 0, 0); //a dummy
+			if (!phase1)
+				return new EnteringArcFinderFirstRule().getEnteringArcObject();
+			Arc dummyArc = new Arc(0, 0, 0, 0, 0, 0); // a dummy
 			dummyArc.setReducedCosts(0);
 			EnteringArcObject candidate = new EnteringArcObject(dummyArc,
 					false, false); // a dummy
 			Iterator<EnteringArcObject> candIterator;
 			EnteringArcObject arcObject;
-			int index = 0;	//counter
-			int removeIndex = index;;
-			for(int i=1; i<=2;i++){
+			int index = 0; // counter
+			int removeIndex = index;
+			;
+			for (int i = 1; i <= 2; i++) {
 				candIterator = this.candidates.iterator();
 				while (candIterator.hasNext()) {
 					arcObject = candIterator.next();
@@ -803,15 +842,17 @@ public class TreeSolution {
 			if (startSearchNodeIndex >= predecessorArray.length)
 				startSearchNodeIndex = 0;
 			LinkedList<EnteringArcObject> candidates = new LinkedList<EnteringArcObject>();
-			//init where we want to start the search
-			Iterator<Arc> iterator = isL? L.iterator(startSearchNodeIndex) : U.iterator(startSearchNodeIndex);
-			//we do that three times
-			//first from where we left, then the complete other list and then the first one again
-			//bcz we might have skipped the beginning
-			for(int i = 1; i<=3; i++){
-				while(iterator.hasNext()){
+			// init where we want to start the search
+			Iterator<Arc> iterator = isL ? L.iterator(startSearchNodeIndex) : U
+					.iterator(startSearchNodeIndex);
+			// we do that three times
+			// first from where we left, then the complete other list and then
+			// the first one again
+			// bcz we might have skipped the beginning
+			for (int i = 1; i <= 3; i++) {
+				while (iterator.hasNext()) {
 					Arc arc = iterator.next();
-					//update reduced costs
+					// update reduced costs
 					arc.setReducedCosts(updateRedCostsOfOneArc(arc));
 					if ((arc.getReducedCosts() < 0 && isL)
 							|| (arc.getReducedCosts() > 0 && !isL))
