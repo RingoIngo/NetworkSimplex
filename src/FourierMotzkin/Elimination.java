@@ -45,7 +45,7 @@ public class Elimination {
 	}
 
 	/**
-	 * Zuordnung der Gleichungen zu P, N, Z
+	 * assign the lines to P, N, Z depending on elVar
 	 */
 	public void assign(double[][] system, int elVar) {
 		int i = 1;
@@ -57,25 +57,43 @@ public class Elimination {
 			} else {
 				Z.add(i);
 			}
+			i++;
 		}
 
 	}
 
 	/**
-	 * Skaliert die Zeilen der Matrix, sd in der Spalte der elVar nur -1,0,1
-	 * steht
+	 * Scale the lines of the matrix, so that the row with index elVar only contain 
+	 * {-1,0,1}
 	 */
 	public double[][] scale(double[][] system, int elVar) {
-		double[][] scaleSystem = new double[system.length][system[1].length];
+		
 
 		for (int i = 0; i < system.length; i++) {
 			for (int j = 0; j < system[1].length; j++) {
-				scaleSystem[i][j] = system[i][j] / system[i][elVar];
+				system[i][j] = system[i][j] / system[i][elVar];
 			}
 		}
-		return scaleSystem;
+		return system;
 	}
 
+	/**
+	 * tests if a linevector is zero 
+	 * @param dummy
+	 * @return
+	 */
+	public boolean testZero (double[] dummy){
+		boolean nonZero =false;
+		int i=0;
+		while (i<dummy.length){
+			if (dummy[i]!=0) nonZero=true;
+			i++;
+		}
+		
+		return nonZero;
+	}
+	
+	
 	/**
 	 * 
 	 * @param system
@@ -85,7 +103,47 @@ public class Elimination {
 	 * @return
 	 */
 
-	public void eliminate ( double[][] scaleSystem, int elVar) {
-//		double [][] solution = new double [][scaleSystem[1]]
+	public double[][] eliminate ( double[][] system, int elVar) {
+		
+		system=scale(system, elVar);    //scale matrix
+		assign(system, elVar);			// fill N,P,Z
+		
+		//Create a new bigger matrix
+		double [][] solution = new double [N.size()*P.size()+Z.size()][system[1].length];
+		for (int j=0; j<system[0].length;j++) {
+			system[0][j]=0;				// Fill first line with 0
+		}
+		
+		// insert lines from P to the new matrix
+		int i=0;
+		while (i < P.size()) {
+			for (int j=0; j<system.length ; j++) {
+				solution[i][j]=system[i][j];
+			}
+			i++;
+		
+		 }
+		
+		// insert the combination of lines from N and P in the matrix 
+		int l=0;
+		while (l < N.size()) {
+			double[] dummy = new double[system[1].length]; 
+				for (int k=0;k<P.size();k++){
+					for (int j=0; j<dummy.length;j++){
+						dummy[j]=system[N.get(l)][j]+system[P.get(k)][j];
+						
+					}
+					if (testZero(dummy)) { 		//test if all variables are zero
+						solution[i]=dummy;		// if not insert the line in our matrix
+						i++;
+					}
+				}
+			l++;
+					
+		}
+		
+		return solution;
+		
+		
 	}
 }
