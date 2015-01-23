@@ -114,22 +114,22 @@ public class Elimination {
 	 * @return
 	 */
 
-	public double[][] eliminate(double[][] system, int elVar) {
+	public void eliminate(int elVar) {
 
-		system = scale(system, elVar); // scale matrix
-		assign(system, elVar); // fill N,P,Z
+		this.conditions = scale(this.conditions, elVar); // scale matrix
+		assign(this.conditions, elVar); // fill N,P,Z
 
 		// Create a new bigger matrix
-		double[][] solution = new double[N.size() * P.size() + Z.size()][system[1].length];
-		for (int j = 0; j < system[0].length; j++) {
-			system[0][j] = 0; // Fill first line with 0
+		double[][] solution = new double[N.size() * P.size() + Z.size()+1][this.conditions[1].length];
+		for (int j = 0; j < this.conditions[0].length; j++) {
+			this.conditions[0][j] = 0; // Fill first line with 0
 		}
 
 		// insert lines from P to the new matrix
-		int i = 0;
-		while (i < P.size()) {
-			for (int j = 0; j < system.length; j++) {
-				solution[i][j] = system[i][j];
+		int i = 1;
+		while (i <= P.size()) {
+			for (int j = 0; j < this.conditions.length; j++) {
+				solution[i][j] = this.conditions[i][j];
 			}
 			i++;
 
@@ -138,10 +138,10 @@ public class Elimination {
 		// insert the combination of lines from N and P in the matrix
 		int l = 0;
 		while (l < N.size()) {
-			double[] dummy = new double[system[1].length];
+			double[] dummy = new double[this.conditions[1].length];
 			for (int k = 0; k < P.size(); k++) {
 				for (int j = 0; j < dummy.length; j++) {
-					dummy[j] = system[N.get(l)][j] + system[P.get(k)][j];
+					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
 
 				}
 				if (testZero(dummy)) { // test if all variables are zero
@@ -153,7 +153,7 @@ public class Elimination {
 
 		}
 
-		return solution;
+		this.conditions= solution;
 
 	}
 
