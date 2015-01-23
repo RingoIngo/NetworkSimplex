@@ -80,8 +80,11 @@ public class Elimination {
 	public double[][] scale(double[][] system, int elVar) {
 
 		for (int i = 1; i < system.length; i++) {
+			double n=system[i][elVar];
 			for (int j = 0; j < system[1].length; j++) {
-				if (system[i][elVar]!=0) system[i][j] = system[i][j] / system[i][elVar];
+				
+				if (n!=0) system[i][j] = system[i][j] /n ;
+				
 			}
 		}
 		return system;
