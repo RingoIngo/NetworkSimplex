@@ -104,7 +104,7 @@ public class Elimination {
 	public boolean testZero(double[] dummy) {
 		boolean nonZero = false;
 		int i = 0;
-		while (i < dummy.length) {
+		while (i < dummy.length-1) {		// CHANGED
 			if (dummy[i] != 0)
 				nonZero = true;
 			i++;
@@ -125,9 +125,6 @@ public class Elimination {
 	public void eliminate(int elVar) {
 
 		assign(this.conditions, elVar); // fill N,P,Z
-		System.out.println(Z.toString());
-		System.out.println(N.toString());
-		System.out.println(P.toString());
 		
 		this.conditions = scale(this.conditions, elVar); // scale matrix
 		
@@ -138,17 +135,12 @@ public class Elimination {
 		}
 
 		// insert lines from Z to the new matrix
-		
+		// CHANGED 
 		int i = 1;
-		while (i <= Z.size()) {
-			
-			for (int j = 0; j < this.conditions[1].length; j++) {
-				solution[i][j] = this.conditions[Z.get(i-1)][j];
-				
-			}
-			i++;
-
+		for(i=1; i<=Z.size();i++){
+				solution[i] = this.conditions[Z.get(i-1)];
 		}
+
 
 		// insert the combination of lines from N and P in the matrix
 		int l = 0;
