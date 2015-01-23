@@ -23,9 +23,9 @@ public class Elimination {
 	 * inputfile. This is the coefficientsmatrix with vector b in it and the
 	 * variables we have to eliminate
 	 */
-	public Elimination(double[][] matrixA, int[] eliminationVariables) {
+	public Elimination(double[][] conditions, int[] eliminationVariables) {
 		this.eliminationVariables = eliminationVariables;
-		this.conditions = matrixA;
+		this.conditions = conditions;
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class Elimination {
 	 * 
 	 * @return matrixA
 	 */
-	public double[][] getMatrixA() {
+	public double[][] getConditions() {
 		return this.conditions;
 	}
 

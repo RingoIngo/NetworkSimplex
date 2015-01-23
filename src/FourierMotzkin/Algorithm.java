@@ -29,7 +29,7 @@ public class Algorithm {
 			int numberOfEliminationVariables = eliminateVariables.length;
 
 			for (int i = 0; i < numberOfEliminationVariables; i++) {
-				elimination.eliminate(elimination.getMatrixA(), eliminateVariables[i]);
+				elimination.eliminate(eliminateVariables[i]);
 			}
 			
 			System.out.println("\n Here are the final conditions: \n");
