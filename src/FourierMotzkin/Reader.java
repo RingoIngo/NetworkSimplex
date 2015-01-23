@@ -19,7 +19,7 @@ public class Reader {
 
 		// reader2 is to determine the number of elimination variables,
 		// variables and conditions
-		BufferedReader reader2 = new BufferedReader(inputFile);
+		BufferedReader reader2 = new BufferedReader(inputFile2);
 
 		String line;
 		System.out.println("start loop to read in single lines");
@@ -63,7 +63,7 @@ public class Reader {
 
 		// create the matrix A with the coefficients. In the last column will be
 		// the vector b
-		int[][] matrixA = new int[numberOfConditions][numberOfAllVariables];
+		double[][] matrixA = new double[numberOfConditions][numberOfAllVariables];
 
 		/**
 		 * Here comes the read in part.
@@ -89,14 +89,17 @@ public class Reader {
 		while ((line = reader.readLine()) != null) {
 			arr = line.split(" ");
 			for (int i = 0; i < arr.length; i++) {
-				matrixA[j][i + 1] = Integer.parseInt(arr[i]); // put coefficient
+				matrixA[j][i + 1] = Double.parseDouble(arr[i]); // put coefficient
 																// in the matrix
 																// A
 			}
 			j++; // next row
 		}
+		reader.close();
+		reader2.close();
 
-//		Elimination elimination = new Elimination(matrixA, eliminationVariables);
+		Elimination elimination = new Elimination(matrixA, eliminationVariables);
+		this.elimination = elimination;
 
 	}
 

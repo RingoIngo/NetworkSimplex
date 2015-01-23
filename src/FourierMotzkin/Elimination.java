@@ -40,7 +40,7 @@ public class Elimination {
 	 * getter method for matrix A
 	 * @return	matrixA
 	 */
-	public int[][] getMatrixA() {
+	public double[][] getMatrixA() {
 		return this.matrixA;
 	}
 
