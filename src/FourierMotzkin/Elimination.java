@@ -88,4 +88,77 @@ public class Elimination {
 	public void eliminate ( double[][] scaleSystem, int elVar) {
 //		double [][] solution = new double [][scaleSystem[1]]
 	}
+	
+	
+	/**
+	 * Method to print the coefficients matrix
+	 * @return String which represents the coefficients matrix
+	 */
+	public String toStringCoefficients(){
+		
+		StringBuffer string = new StringBuffer();
+		
+		for(int j = 1; j < matrixA.length; j++){
+			for(int i = 1; i < matrixA[j].length-1; i++){
+				string.append(matrixA[j][i] + " ");
+			}
+			string.append("\n \n");
+		}
+		
+		return string.toString();
+	}
+	
+	/**
+	 * Method to print the conditions
+	 * @return String which contains all the conditions we can create out of the matrix line by line
+	 */
+	public String toStringConditions(){
+		
+		StringBuffer string = new StringBuffer();
+		
+		for(int j = 1; j < matrixA.length; j++){
+
+			for(int i = 1; i < matrixA[j].length; i++){
+
+				// the last entry in a row is the constant of b
+				if(i==matrixA[j].length-1){
+					string.append("<= " + matrixA[j][i]);
+				} else {	// other entries are coefficients
+					string.append(matrixA[j][i] + "*x" + i + " ");
+				}
+			}
+			string.append("\n \n");
+		}
+		
+		
+		return string.toString();
+	}
+	
+	/**
+	 * Method to print the elimination variables
+	 * @return String which contains all elimination variables
+	 */
+	public String toStringEliminationVariables(){
+		
+		StringBuffer string = new StringBuffer();
+		
+		for(int i = 0; i < eliminationVariables.length; i++){
+			string.append("X" + eliminationVariables[i] + " ");
+		}
+		string.append("\n \n");
+		return string.toString();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

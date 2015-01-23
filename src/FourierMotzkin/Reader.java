@@ -14,7 +14,6 @@ public class Reader {
 		FileReader inputFile = new FileReader(filename);
 		FileReader inputFile2 = new FileReader(filename);
 
-		System.out.println("invoke buffered reader");
 		BufferedReader reader = new BufferedReader(inputFile);
 
 		// reader2 is to determine the number of elimination variables,
@@ -22,7 +21,6 @@ public class Reader {
 		BufferedReader reader2 = new BufferedReader(inputFile2);
 
 		String line;
-		System.out.println("start loop to read in single lines");
 
 		/**
 		 * At first we determine how many variable we have to delete We found
@@ -63,7 +61,8 @@ public class Reader {
 
 		// create the matrix A with the coefficients. In the last column will be
 		// the vector b
-		double[][] matrixA = new double[numberOfConditions][numberOfAllVariables];
+		// add +1 because the first row and the first column is 0
+		double[][] matrixA = new double[numberOfConditions+1][numberOfAllVariables+1];
 
 		/**
 		 * Here comes the read in part.
