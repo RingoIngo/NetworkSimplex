@@ -163,7 +163,7 @@ public class Elimination {
 					solution[i] = dummy; // if not insert the line in our matrix
 					
 					i++;
-					
+					System.out.println(i);
 				}
 			}
 			l++;
