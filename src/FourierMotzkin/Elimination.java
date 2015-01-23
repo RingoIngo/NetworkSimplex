@@ -54,10 +54,9 @@ public class Elimination {
 		LinkedList<Integer> P = new LinkedList<Integer>();
 		LinkedList<Integer> N = new LinkedList<Integer>();
 		LinkedList<Integer> Z = new LinkedList<Integer>();
+
 		
-		int i = 1;
-		
-		while (i < system.length) {
+		for(int i = 1; i < system.length; i++) {
 			if (system[i][elVar] < 0) {
 				N.add(i);
 			} 
@@ -66,8 +65,6 @@ public class Elimination {
 			} else {
 				Z.add(i);
 			}
-				
-			i++;
 		}
 		
 		this.P = P;
@@ -140,22 +137,17 @@ public class Elimination {
 		// insert lines from Z to the new matrix
 		
 		int i = 1;
-		while (i <= Z.size()) {
-			
-			for (int j = 0; j < this.conditions[1].length; j++) {
-				solution[i][j] = this.conditions[Z.get(i-1)][j];
-				
-			}
-			i++;
-
+		for(; i<=Z.size();i++) {
+				solution[i] = this.conditions[Z.get(i-1)];
 		}
 
 		// insert the combination of lines from N and P in the matrix
-		int l = 0;
 		
-		while (l < N.size()) {
-			double[] dummy = new double[this.conditions[1].length];
+		for(int l = 0; l < N.size(); l++) {
+
 			for (int k = 0; k < P.size(); k++) {
+				
+				double[] dummy = new double[this.conditions[1].length];
 				
 				for (int j = 0; j < dummy.length; j++) {
 					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
@@ -168,8 +160,6 @@ public class Elimination {
 					System.out.println(i);
 				}
 			}
-			l++;
-
 		}
 
 		this.conditions= solution;
