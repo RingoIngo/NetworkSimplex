@@ -16,7 +16,7 @@ public class Elimination {
 	// the matrix with all coefficients of the conditions and the vector b in
 	// the last column.
 	// to keep it easy, the first column and the first row is 0
-	private double[][] matrixA;
+	private double[][] conditions;
 
 	/**
 	 * This contructor needed informations the Reader read in out of the
@@ -25,11 +25,12 @@ public class Elimination {
 	 */
 	public Elimination(double[][] matrixA, int[] eliminationVariables) {
 		this.eliminationVariables = eliminationVariables;
-		this.matrixA = matrixA;
+		this.conditions = matrixA;
 	}
 
 	/**
 	 * getter method for elimination variables
+	 * 
 	 * @return eliminationVariables
 	 */
 	public int[] getEliminationVariables() {
@@ -38,16 +39,22 @@ public class Elimination {
 
 	/**
 	 * getter method for matrix A
-	 * @return	matrixA
+	 * 
+	 * @return matrixA
 	 */
 	public double[][] getMatrixA() {
-		return this.matrixA;
+		return this.conditions;
 	}
 
 	/**
 	 * assign the lines to P, N, Z depending on elVar
 	 */
 	public void assign(double[][] system, int elVar) {
+		
+		LinkedList<Integer> P = new LinkedList<Integer>();
+		LinkedList<Integer> N = new LinkedList<Integer>();
+		LinkedList<Integer> Z = new LinkedList<Integer>();
+		
 		int i = 1;
 		while (i < system.length) {
 			if (system[i][elVar] < 0) {
@@ -59,15 +66,18 @@ public class Elimination {
 			}
 			i++;
 		}
+		
+		this.P = P;
+		this.N = N;
+		this.Z = Z;
 
 	}
 
 	/**
-	 * Scale the lines of the matrix, so that the row with index elVar only contain 
-	 * {-1,0,1}
+	 * Scale the lines of the matrix, so that the row with index elVar only
+	 * contain {-1,0,1}
 	 */
 	public double[][] scale(double[][] system, int elVar) {
-		
 
 		for (int i = 0; i < system.length; i++) {
 			for (int j = 0; j < system[1].length; j++) {
@@ -78,22 +88,23 @@ public class Elimination {
 	}
 
 	/**
-	 * tests if a linevector is zero 
+	 * tests if a linevector is zero
+	 * 
 	 * @param dummy
 	 * @return
 	 */
-	public boolean testZero (double[] dummy){
-		boolean nonZero =false;
-		int i=0;
-		while (i<dummy.length){
-			if (dummy[i]!=0) nonZero=true;
+	public boolean testZero(double[] dummy) {
+		boolean nonZero = false;
+		int i = 0;
+		while (i < dummy.length) {
+			if (dummy[i] != 0)
+				nonZero = true;
 			i++;
 		}
-		
+
 		return nonZero;
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param system
@@ -103,120 +114,109 @@ public class Elimination {
 	 * @return
 	 */
 
-	public double[][] eliminate ( double[][] system, int elVar) {
-		
-		system=scale(system, elVar);    //scale matrix
-		assign(system, elVar);			// fill N,P,Z
-		
-		//Create a new bigger matrix
-		double [][] solution = new double [N.size()*P.size()+Z.size()][system[1].length];
-		for (int j=0; j<system[0].length;j++) {
-			system[0][j]=0;				// Fill first line with 0
+	public double[][] eliminate(double[][] system, int elVar) {
+
+		system = scale(system, elVar); // scale matrix
+		assign(system, elVar); // fill N,P,Z
+
+		// Create a new bigger matrix
+		double[][] solution = new double[N.size() * P.size() + Z.size()][system[1].length];
+		for (int j = 0; j < system[0].length; j++) {
+			system[0][j] = 0; // Fill first line with 0
 		}
-		
+
 		// insert lines from P to the new matrix
-		int i=0;
+		int i = 0;
 		while (i < P.size()) {
-			for (int j=0; j<system.length ; j++) {
-				solution[i][j]=system[i][j];
+			for (int j = 0; j < system.length; j++) {
+				solution[i][j] = system[i][j];
 			}
 			i++;
-		
-		 }
-		
-		// insert the combination of lines from N and P in the matrix 
-		int l=0;
-		while (l < N.size()) {
-			double[] dummy = new double[system[1].length]; 
-				for (int k=0;k<P.size();k++){
-					for (int j=0; j<dummy.length;j++){
-						dummy[j]=system[N.get(l)][j]+system[P.get(k)][j];
-						
-					}
-					if (testZero(dummy)) { 		//test if all variables are zero
-						solution[i]=dummy;		// if not insert the line in our matrix
-						i++;
-					}
-				}
-			l++;
-					
+
 		}
-		
+
+		// insert the combination of lines from N and P in the matrix
+		int l = 0;
+		while (l < N.size()) {
+			double[] dummy = new double[system[1].length];
+			for (int k = 0; k < P.size(); k++) {
+				for (int j = 0; j < dummy.length; j++) {
+					dummy[j] = system[N.get(l)][j] + system[P.get(k)][j];
+
+				}
+				if (testZero(dummy)) { // test if all variables are zero
+					solution[i] = dummy; // if not insert the line in our matrix
+					i++;
+				}
+			}
+			l++;
+
+		}
+
 		return solution;
-		
-		
+
 	}
-	
-	
+
 	/**
 	 * Method to print the coefficients matrix
+	 * 
 	 * @return String which represents the coefficients matrix
 	 */
-	public String toStringCoefficients(){
-		
+	public String toStringCoefficients() {
+
 		StringBuffer string = new StringBuffer();
-		
-		for(int j = 1; j < matrixA.length; j++){
-			for(int i = 1; i < matrixA[j].length-1; i++){
-				string.append(matrixA[j][i] + " ");
+
+		for (int j = 1; j < conditions.length; j++) {
+			for (int i = 1; i < conditions[j].length - 1; i++) {
+				string.append(conditions[j][i] + " ");
 			}
 			string.append("\n \n");
 		}
-		
+
 		return string.toString();
 	}
-	
+
 	/**
 	 * Method to print the conditions
-	 * @return String which contains all the conditions we can create out of the matrix line by line
+	 * 
+	 * @return String which contains all the conditions we can create out of the
+	 *         matrix line by line
 	 */
-	public String toStringConditions(){
-		
-		StringBuffer string = new StringBuffer();
-		
-		for(int j = 1; j < matrixA.length; j++){
+	public String toStringConditions() {
 
-			for(int i = 1; i < matrixA[j].length; i++){
+		StringBuffer string = new StringBuffer();
+
+		for (int j = 1; j < conditions.length; j++) {
+
+			for (int i = 1; i < conditions[j].length; i++) {
 
 				// the last entry in a row is the constant of b
-				if(i==matrixA[j].length-1){
-					string.append("<= " + matrixA[j][i]);
-				} else {	// other entries are coefficients
-					string.append(matrixA[j][i] + "*x" + i + " ");
+				if (i == conditions[j].length - 1) {
+					string.append("<= " + conditions[j][i]);
+				} else { // other entries are coefficients
+					string.append(conditions[j][i] + "*x" + i + " ");
 				}
 			}
 			string.append("\n \n");
 		}
-		
-		
+
 		return string.toString();
 	}
-	
+
 	/**
 	 * Method to print the elimination variables
+	 * 
 	 * @return String which contains all elimination variables
 	 */
-	public String toStringEliminationVariables(){
-		
+	public String toStringEliminationVariables() {
+
 		StringBuffer string = new StringBuffer();
-		
-		for(int i = 0; i < eliminationVariables.length; i++){
+
+		for (int i = 0; i < eliminationVariables.length; i++) {
 			string.append("X" + eliminationVariables[i] + " ");
 		}
 		string.append("\n \n");
 		return string.toString();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

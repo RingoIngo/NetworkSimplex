@@ -62,7 +62,7 @@ public class Reader {
 		// create the matrix A with the coefficients. In the last column will be
 		// the vector b
 		// add +1 because the first row and the first column is 0
-		double[][] matrixA = new double[numberOfConditions+1][numberOfAllVariables+1];
+		double[][] matrixA = new double[numberOfConditions + 1][numberOfAllVariables + 1];
 
 		/**
 		 * Here comes the read in part.
@@ -88,7 +88,8 @@ public class Reader {
 		while ((line = reader.readLine()) != null) {
 			arr = line.split(" ");
 			for (int i = 0; i < arr.length; i++) {
-				matrixA[j][i + 1] = Double.parseDouble(arr[i]); // put coefficient
+				matrixA[j][i + 1] = Double.parseDouble(arr[i]); // put
+																// coefficient
 																// in the matrix
 																// A
 			}
