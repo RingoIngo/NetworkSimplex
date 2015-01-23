@@ -117,6 +117,7 @@ public class Elimination {
 	public void eliminate(int elVar) {
 
 		this.conditions = scale(this.conditions, elVar); // scale matrix
+		System.out.println(this.toStringConditions());
 		assign(this.conditions, elVar); // fill N,P,Z
 
 		// Create a new bigger matrix
