@@ -58,7 +58,6 @@ public class Elimination {
 		int i = 1;
 		
 		while (i < system.length) {
-			System.out.println(system[i][elVar]);
 			if (system[i][elVar] < 0) {
 				N.add(i);
 			} 
@@ -124,8 +123,11 @@ public class Elimination {
 	public void eliminate(int elVar) {
 
 		assign(this.conditions, elVar); // fill N,P,Z
+		System.out.println(Z.toString());
+		System.out.println(N.toString());
+		System.out.println(P.toString());
+		
 		this.conditions = scale(this.conditions, elVar); // scale matrix
-		System.out.println(this.toStringConditions());
 		
 		// Create a new bigger matrix
 		double[][] solution = new double[N.size() * P.size() + Z.size()+1][this.conditions[1].length];
@@ -133,7 +135,7 @@ public class Elimination {
 			solution[0][j] = 0; // Fill first line with 0
 		}
 
-		// insert lines from P to the new matrix
+		// insert lines from Z to the new matrix
 		
 		int i = 1;
 		while (i <= Z.size()) {
