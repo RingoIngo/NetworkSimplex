@@ -139,7 +139,7 @@ public class Elimination {
 		while (i <= Z.size()) {
 			
 			for (int j = 0; j < this.conditions[1].length; j++) {
-				solution[i][j] = this.conditions[i][j];
+				solution[i][j] = this.conditions[Z.get(i-1)][j];
 				
 			}
 			i++;
