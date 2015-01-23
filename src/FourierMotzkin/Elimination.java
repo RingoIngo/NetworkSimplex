@@ -56,14 +56,18 @@ public class Elimination {
 		LinkedList<Integer> Z = new LinkedList<Integer>();
 		
 		int i = 1;
+		
 		while (i < system.length) {
+			System.out.println(system[i][elVar]);
 			if (system[i][elVar] < 0) {
 				N.add(i);
-			} else if (system[i][elVar] > 0) {
+			} 
+			else if (system[i][elVar] > 0) {
 				P.add(i);
 			} else {
 				Z.add(i);
 			}
+				
 			i++;
 		}
 		
@@ -119,10 +123,10 @@ public class Elimination {
 
 	public void eliminate(int elVar) {
 
+		assign(this.conditions, elVar); // fill N,P,Z
 		this.conditions = scale(this.conditions, elVar); // scale matrix
 		System.out.println(this.toStringConditions());
-		assign(this.conditions, elVar); // fill N,P,Z
-
+		
 		// Create a new bigger matrix
 		double[][] solution = new double[N.size() * P.size() + Z.size()+1][this.conditions[1].length];
 		for (int j = 0; j < this.conditions[0].length; j++) {
@@ -130,10 +134,13 @@ public class Elimination {
 		}
 
 		// insert lines from P to the new matrix
+		
 		int i = 1;
-		while (i <= P.size()) {
-			for (int j = 0; j < this.conditions.length; j++) {
+		while (i <= Z.size()) {
+			
+			for (int j = 0; j < this.conditions[1].length; j++) {
 				solution[i][j] = this.conditions[i][j];
+				
 			}
 			i++;
 
@@ -141,16 +148,20 @@ public class Elimination {
 
 		// insert the combination of lines from N and P in the matrix
 		int l = 0;
+		
 		while (l < N.size()) {
 			double[] dummy = new double[this.conditions[1].length];
 			for (int k = 0; k < P.size(); k++) {
+				
 				for (int j = 0; j < dummy.length; j++) {
-					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
-
+					dummy[j] = this.conditions[N.get(l)][j] - this.conditions[P.get(k)][j];
+					
 				}
 				if (testZero(dummy)) { // test if all variables are zero
 					solution[i] = dummy; // if not insert the line in our matrix
+					
 					i++;
+					
 				}
 			}
 			l++;
