@@ -16,14 +16,14 @@ public class Elimination {
 	// the matrix with all coefficients of the conditions and the vector b in
 	// the last column.
 	// to keep it easy, the first column and the first row is 0
-	private int[][] matrixA;
+	private double[][] matrixA;
 
 	/**
 	 * This contructor needed informations the Reader read in out of the
 	 * inputfile. This is the coefficientsmatrix with vector b in it and the
 	 * variables we have to eliminate
 	 */
-	public Elimination(int[][] matrixA, int[] eliminationVariables) {
+	public Elimination(double[][] matrixA, int[] eliminationVariables) {
 		this.eliminationVariables = eliminationVariables;
 		this.matrixA = matrixA;
 	}
