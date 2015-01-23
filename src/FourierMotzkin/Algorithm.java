@@ -25,6 +25,16 @@ public class Algorithm {
 			System.out.println("\n These are the conditions: \n");
 			System.out.println(elimination.toStringConditions());
 
+			int[] eliminateVariables = elimination.getEliminationVariables();
+			int numberOfEliminationVariables = eliminateVariables.length;
+
+			for (int i = 0; i < numberOfEliminationVariables; i++) {
+				elimination.eliminate(elimination.getMatrixA(), eliminateVariables[i]);
+			}
+			
+			System.out.println("\n Here are the final conditions: \n");
+			System.out.println(elimination.toStringConditions());
+
 			long endTime = System.currentTimeMillis();
 
 			System.out.println("\n \n The eliminations took "
