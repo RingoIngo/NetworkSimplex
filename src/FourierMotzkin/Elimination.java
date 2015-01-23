@@ -83,7 +83,9 @@ public class Elimination {
 	public double[][] scale(double[][] system, int elVar) {
 
 		for (int i = 1; i < system.length; i++) {
+			
 			double n=system[i][elVar];
+			if (n<0) n=-n;
 			for (int j = 0; j < system[1].length; j++) {
 				
 				if (n!=0) system[i][j] = system[i][j] /n ;
@@ -156,7 +158,7 @@ public class Elimination {
 			for (int k = 0; k < P.size(); k++) {
 				
 				for (int j = 0; j < dummy.length; j++) {
-					dummy[j] = this.conditions[N.get(l)][j] - this.conditions[P.get(k)][j];
+					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
 					
 				}
 				if (testZero(dummy)) { // test if all variables are zero
