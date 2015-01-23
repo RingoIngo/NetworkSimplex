@@ -122,7 +122,7 @@ public class Elimination {
 		// Create a new bigger matrix
 		double[][] solution = new double[N.size() * P.size() + Z.size()+1][this.conditions[1].length];
 		for (int j = 0; j < this.conditions[0].length; j++) {
-			this.conditions[0][j] = 0; // Fill first line with 0
+			solution[0][j] = 0; // Fill first line with 0
 		}
 
 		// insert lines from P to the new matrix
