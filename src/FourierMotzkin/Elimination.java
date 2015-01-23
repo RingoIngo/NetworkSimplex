@@ -9,6 +9,7 @@ public class Elimination {
 	private LinkedList<Integer> N;
 
 	private LinkedList<Integer> Z;
+	
 
 	// an array with all variables we have to eliminate
 	private int[] eliminationVariables;
@@ -101,7 +102,7 @@ public class Elimination {
 	public boolean testZero(double[] dummy) {
 		boolean nonZero = false;
 		int i = 0;
-		while (i < dummy.length) {
+		while (i < dummy.length-1) {
 			if (dummy[i] != 0)
 				nonZero = true;
 			i++;
@@ -109,6 +110,27 @@ public class Elimination {
 
 		return nonZero;
 	}
+	
+	public boolean testEqualOrRedundant(double[][] solution, double[] dummy, int i){
+		boolean Equal = true;
+		
+		for(int j=1; j<i;i++) {
+			
+			for (int k=1; k<dummy.length-1;k++){
+				if (dummy[k]!=solution[j][k]) {
+					Equal =false;
+					break;
+				}
+			}
+			if (Equal) {
+				if (dummy[dummy.length-1]>=solution[j][dummy.length-1]) return Equal;
+			}		
+		}
+		return false;
+	}
+	
+	
+	
 
 	/**
 	 * 
@@ -153,7 +175,7 @@ public class Elimination {
 					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
 					
 				}
-				if (testZero(dummy)) { // test if all variables are zero
+				if (testZero(dummy) && !testEqualOrRedundant(solution, dummy, i)) { // test if all variables are zero
 					solution[i] = dummy; // if not insert the line in our matrix
 					
 					i++;
