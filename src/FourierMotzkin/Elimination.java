@@ -9,7 +9,6 @@ public class Elimination {
 	private LinkedList<Integer> N;
 
 	private LinkedList<Integer> Z;
-	
 
 	// an array with all variables we have to eliminate
 	private int[] eliminationVariables;
@@ -51,23 +50,21 @@ public class Elimination {
 	 * assign the lines to P, N, Z depending on elVar
 	 */
 	public void assign(double[][] system, int elVar) {
-		
+
 		LinkedList<Integer> P = new LinkedList<Integer>();
 		LinkedList<Integer> N = new LinkedList<Integer>();
 		LinkedList<Integer> Z = new LinkedList<Integer>();
 
-		
-		for(int i = 1; i < system.length; i++) {
+		for (int i = 1; i < system.length; i++) {
 			if (system[i][elVar] < 0) {
 				N.add(i);
-			} 
-			else if (system[i][elVar] > 0) {
+			} else if (system[i][elVar] > 0) {
 				P.add(i);
 			} else {
 				Z.add(i);
 			}
 		}
-		
+
 		this.P = P;
 		this.N = N;
 		this.Z = Z;
@@ -81,13 +78,15 @@ public class Elimination {
 	public double[][] scale(double[][] system, int elVar) {
 
 		for (int i = 1; i < system.length; i++) {
-			
-			double n=system[i][elVar];
-			if (n<0) n=-n;
+
+			double n = system[i][elVar];
+			if (n < 0)
+				n = -n;
 			for (int j = 0; j < system[1].length; j++) {
-				
-				if (n!=0) system[i][j] = system[i][j] /n ;
-				
+
+				if (n != 0)
+					system[i][j] = system[i][j] / n;
+
 			}
 		}
 		return system;
@@ -102,7 +101,7 @@ public class Elimination {
 	public boolean testZero(double[] dummy) {
 		boolean nonZero = false;
 		int i = 0;
-		while (i < dummy.length-1) {
+		while (i < dummy.length - 1) {
 			if (dummy[i] != 0)
 				nonZero = true;
 			i++;
@@ -110,48 +109,50 @@ public class Elimination {
 
 		return nonZero;
 	}
-	
-	public boolean testEqualOrRedundant(double[][] solution, double[] dummy, int i){
+
+	public boolean testEqualOrRedundant(double[][] solution, double[] dummy,
+			int i) {
 		boolean Equal = true;
-		
-		for(int j=1; j<i;i++) {
-			
-			for (int k=1; k<dummy.length-1;k++){
-				if (dummy[k]!=solution[j][k]) {
-					Equal =false;
+
+		for (int j = 1; j < i; i++) {
+
+			for (int k = 1; k < dummy.length - 1; k++) {
+				if (dummy[k] != solution[j][k]) {
+					Equal = false;
 					break;
 				}
 			}
 			if (Equal) {
-				if (dummy[dummy.length-1]>=solution[j][dummy.length-1]) return Equal;
-			}		
+				if (dummy[dummy.length - 1] >= solution[j][dummy.length - 1])
+					return Equal;
+			}
 		}
 		return false;
 	}
-	
-	public double [][] testEqualOrRedundant2(double[][] solution, double[] dummy, int i){
+
+	public double[][] testEqualOrRedundant2(double[][] solution,
+			double[] dummy, int i) {
 		boolean Equal = true;
-		
-		for(int j=1; j<i;j++) {
-			
-			for (int k=1; k<dummy.length-1;k++){
-				if (dummy[k]!=solution[j][k]) {
-					Equal =false;
+
+		for (int j = 1; j < i; j++) {
+
+			for (int k = 1; k < dummy.length - 1; k++) {
+				if (dummy[k] != solution[j][k]) {
+					Equal = false;
 					break;
 				}
 			}
 			if (Equal) {
-				if (dummy[dummy.length-1]>=solution[j][dummy.length-1]) {
-					return solution;	// no change necessary
-				}
-				else {
-					solution[j]=dummy; //change line j with dummy
+				if (dummy[dummy.length - 1] >= solution[j][dummy.length - 1]) {
+					return solution; // no change necessary
+				} else {
+					solution[j] = dummy; // change line j with dummy
 					return solution;
 				}
 			}
-					
+
 		}
-		solution[i]=dummy;
+		solution[i] = dummy;
 		return solution;
 	}
 
@@ -170,58 +171,69 @@ public class Elimination {
 		System.out.println(Z.toString());
 		System.out.println(N.toString());
 		System.out.println(P.toString());
-		
+
+		int numberOfVariables = this.conditions[1].length;	// number of variables in the problem
+		int numberOfConditionsNotZero = 0;		// count the number of conditions that are not zero
+
 		this.conditions = scale(this.conditions, elVar); // scale matrix
-		
+
 		// Create a new bigger matrix
-		double[][] solution = new double[N.size() * P.size() + Z.size()+1][this.conditions[1].length];
+		double[][] solution = new double[N.size() * P.size() + Z.size() + 1][numberOfVariables];
 		for (int j = 0; j < this.conditions[0].length; j++) {
 			solution[0][j] = 0; // Fill first line with 0
 		}
 
 		// insert lines from Z to the new matrix
-		
+
 		int i = 1;
-		int x=1;
-		for(; x<=Z.size();x++) {
-				if (testZero(this.conditions[Z.get(x-1)])) {
-					solution[i] = this.conditions[Z.get(x-1)];
-					i++;
-				}
+		int x = 1;
+		for (; x <= Z.size(); x++) {
+			if (testZero(this.conditions[Z.get(x - 1)])) {
+				solution[i] = this.conditions[Z.get(x - 1)];
+				i++;
+				numberOfConditionsNotZero++;
+			}
 		}
 
 		// insert the combination of lines from N and P in the matrix
-		
-		for(int l = 0; l < N.size(); l++) {
+
+		for (int l = 0; l < N.size(); l++) {
 
 			for (int k = 0; k < P.size(); k++) {
-				
-				double[] dummy = new double[this.conditions[1].length];
-				
+
+				double[] dummy = new double[numberOfVariables];
+
 				for (int j = 0; j < dummy.length; j++) {
-					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
-					
+					dummy[j] = this.conditions[N.get(l)][j]
+							+ this.conditions[P.get(k)][j];
+
 				}
 				if (testZero(dummy)) { // test if all variables are zero
 					solution[i] = dummy; // if not insert the line in our matrix
 					i++;
-				//	solution=testEqualOrRedundant2(solution, dummy, i);
-				//	if (!testZero(solution[i])) i++;
-					
+					numberOfConditionsNotZero++;
+					// solution=testEqualOrRedundant2(solution, dummy, i);
+					// if (!testZero(solution[i])) i++;
+
 				}
 			}
 		}
+		
+		// now create an array with the right number of conditions. so we wont have any 0-lines
+		this.conditions = new double[numberOfConditionsNotZero+1][numberOfVariables];
 
-		this.conditions= solution;
-
+		// copy the non-0-lines from solution to conditions
+		for (int j = 1; j <= numberOfConditionsNotZero; j++) {
+			this.conditions[j] = solution[j];
+		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	public int getNumberOfConditions() {
-		return this.getConditions().length-1;
+		return this.getConditions().length - 1;
 	}
 
 	/**
