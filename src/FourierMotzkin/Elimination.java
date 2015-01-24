@@ -129,8 +129,31 @@ public class Elimination {
 		return false;
 	}
 	
-	
-	
+	public double [][] testEqualOrRedundant2(double[][] solution, double[] dummy, int i){
+		boolean Equal = true;
+		
+		for(int j=1; j<i;j++) {
+			
+			for (int k=1; k<dummy.length-1;k++){
+				if (dummy[k]!=solution[j][k]) {
+					Equal =false;
+					break;
+				}
+			}
+			if (Equal) {
+				if (dummy[dummy.length-1]>=solution[j][dummy.length-1]) {
+					return solution;	// no change necessary
+				}
+				else {
+					solution[j]=dummy; //change line j with dummy
+					return solution;
+				}
+			}
+					
+		}
+		solution[i]=dummy;
+		return solution;
+	}
 
 	/**
 	 * 
@@ -175,11 +198,12 @@ public class Elimination {
 					dummy[j] = this.conditions[N.get(l)][j] + this.conditions[P.get(k)][j];
 					
 				}
-				if (testZero(dummy) && !testEqualOrRedundant(solution, dummy, i)) { // test if all variables are zero
-					solution[i] = dummy; // if not insert the line in our matrix
+				if (testZero(dummy)) { // test if all variables are zero
+					// solution[i] = dummy; // if not insert the line in our matrix
 					
-					i++;
-					System.out.println(i);
+					solution=testEqualOrRedundant2(solution, dummy, i);
+					if (!testZero(solution[i])) i++;
+					
 				}
 			}
 		}
