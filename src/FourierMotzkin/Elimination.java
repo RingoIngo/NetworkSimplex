@@ -211,6 +211,14 @@ public class Elimination {
 		this.conditions= solution;
 
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int getNumberOfConditions() {
+		return this.getConditions().length-1;
+	}
 
 	/**
 	 * Method to print the coefficients matrix

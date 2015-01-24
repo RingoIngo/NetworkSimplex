@@ -29,7 +29,15 @@ public class Algorithm {
 			int numberOfEliminationVariables = eliminateVariables.length;
 
 			for (int i = 0; i < numberOfEliminationVariables; i++) {
+				
+				System.out.println("\n Execute the eliminiation of X" +eliminateVariables[i]+ "\n");
+				
 				elimination.eliminate(eliminateVariables[i]);
+				
+				System.out.println("\n Here are the conditions after the elimination of X" + eliminateVariables[i]+ ": \n");
+				System.out.println(elimination.toStringConditions());
+				
+				System.out.println("\n Now we have "+elimination.getNumberOfConditions()+" conditions \n ");
 			}
 			
 			System.out.println("\n Here are the final conditions: \n");
