@@ -182,8 +182,12 @@ public class Elimination {
 		// insert lines from Z to the new matrix
 		
 		int i = 1;
-		for(; i<=Z.size();i++) {
-				solution[i] = this.conditions[Z.get(i-1)];
+		int x=1;
+		for(; x<=Z.size();x++) {
+				if (testZero(this.conditions[Z.get(x-1)])) {
+					solution[i] = this.conditions[Z.get(x-1)];
+					i++;
+				}
 		}
 
 		// insert the combination of lines from N and P in the matrix
@@ -199,10 +203,10 @@ public class Elimination {
 					
 				}
 				if (testZero(dummy)) { // test if all variables are zero
-					// solution[i] = dummy; // if not insert the line in our matrix
-					
-					solution=testEqualOrRedundant2(solution, dummy, i);
-					if (!testZero(solution[i])) i++;
+					solution[i] = dummy; // if not insert the line in our matrix
+					i++;
+				//	solution=testEqualOrRedundant2(solution, dummy, i);
+				//	if (!testZero(solution[i])) i++;
 					
 				}
 			}
