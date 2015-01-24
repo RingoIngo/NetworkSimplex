@@ -46,7 +46,7 @@ public class Algorithm {
 			long endTime = System.currentTimeMillis();
 
 			System.out.println("\n \n The eliminations took "
-					+ (endTime - startTime));
+					+ (endTime - startTime) +" ms");
 
 		} catch (IOException e) {
 			System.out.println("file not found");
