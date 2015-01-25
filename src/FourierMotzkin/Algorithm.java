@@ -18,35 +18,41 @@ public class Algorithm {
 			System.out.println("\n These are the elimination variables: \n");
 			System.out.println(elimination.toStringEliminationVariables());
 
-			System.out
-					.println("\n This is the coefficient matrix row by row: \n");
-			System.out.println(elimination.toStringCoefficients());
+			// System.out
+			// .println("\n This is the coefficient matrix row by row: \n");
+			// System.out.println(elimination.toStringCoefficients());
 
 			System.out.println("\n These are the conditions: \n");
 			System.out.println(elimination.toStringConditions());
 
-			int[] eliminateVariables = elimination.getEliminationVariables();
-			int numberOfEliminationVariables = eliminateVariables.length;
+			int[] eliminationVariables = elimination.getEliminationVariables();
+			int numberOfEliminationVariables = eliminationVariables.length;
 
 			for (int i = 0; i < numberOfEliminationVariables; i++) {
-				
-				System.out.println("\n Execute the eliminiation of X" +eliminateVariables[i]+ "\n");
-				
-				elimination.eliminate(eliminateVariables[i]);
-				
-				System.out.println("\n Here are the conditions after the elimination of X" + eliminateVariables[i]+ ": \n");
-				System.out.println(elimination.toStringConditions());
-				
-				System.out.println("\n Now we have "+elimination.getNumberOfConditions()+" conditions \n ");
+
+				// System.out.println("\n Execute the eliminiation of X"
+				// +(eliminationVariables[i]+1)+ "\n");
+
+				if ((i + 1) == numberOfEliminationVariables) {
+					elimination.eliminate(true, eliminationVariables[i]);
+				} else {
+					elimination.eliminate(false, eliminationVariables[i]);
+				}
+
+				// System.out.println("\n Here are the conditions after the elimination of X"
+				// + (eliminationVariables[i]+1)+ ": \n");
+				// System.out.println(elimination.toStringConditions());
+				//
+				// System.out.println("\n Now we have "+elimination.getNumberOfConditions()+" conditions \n ");
 			}
-			
-			System.out.println("\n Here are the final conditions: \n");
-			System.out.println(elimination.toStringConditions());
+
+			// System.out.println("\n Here are the final conditions: \n");
+			// System.out.println(elimination.toStringConditions());
 
 			long endTime = System.currentTimeMillis();
 
 			System.out.println("\n \n The eliminations took "
-					+ (endTime - startTime) +" ms");
+					+ (endTime - startTime) + " ms");
 
 		} catch (IOException e) {
 			System.out.println("file not found");

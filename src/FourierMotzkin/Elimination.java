@@ -1,5 +1,6 @@
 package FourierMotzkin;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Elimination {
@@ -10,15 +11,17 @@ public class Elimination {
 
 	private LinkedList<Integer> Z;
 
-	// an array with all variables we have to eliminate
-	private int[] eliminationVariables;
-
 	// the matrix with all coefficients of the conditions and the vector b in
 	// the last column.
-	// to keep it easy, the first column and the first row is 0
 	private double[][] conditions;
 
-	private int numberOfConditionsNotZero;
+	int[] eliminationVariables;
+
+	// maybe not necessary
+	private int numberOfConditions;
+
+	// maybe not necessary
+	boolean oneVariableWillBeLeft;
 
 	/**
 	 * This contructor needed informations the Reader read in out of the
@@ -26,21 +29,12 @@ public class Elimination {
 	 * variables we have to eliminate
 	 */
 	public Elimination(double[][] conditions, int[] eliminationVariables) {
-		this.eliminationVariables = eliminationVariables;
 		this.conditions = conditions;
+		this.eliminationVariables = eliminationVariables;
 	}
 
 	/**
-	 * getter method for elimination variables
-	 * 
-	 * @return eliminationVariables
-	 */
-	public int[] getEliminationVariables() {
-		return this.eliminationVariables;
-	}
-
-	/**
-	 * getter method for matrix A
+	 * getter method for conditions
 	 * 
 	 * @return matrixA
 	 */
@@ -49,26 +43,33 @@ public class Elimination {
 	}
 
 	/**
+	 * getter method for elimination variables
+	 */
+	public int[] getEliminationVariables() {
+		return this.eliminationVariables;
+	}
+
+	/**
 	 * 
 	 * @return
 	 */
 	public int getNumberOfConditions() {
-		return this.getConditions().length - 1;
+		return this.getConditions().length;
 	}
 
 	/**
 	 * assign the lines to P, N, Z depending on elVar
 	 */
-	public void assign(int elVar) {
+	public void assign(int elIndex) {
 
 		LinkedList<Integer> P = new LinkedList<Integer>();
 		LinkedList<Integer> N = new LinkedList<Integer>();
 		LinkedList<Integer> Z = new LinkedList<Integer>();
 
-		for (int i = 1; i < this.conditions.length; i++) {
-			if (this.conditions[i][elVar] < 0) {
+		for (int i = 0; i < this.conditions.length; i++) {
+			if (this.conditions[i][elIndex] < 0) {
 				N.add(i);
-			} else if (this.conditions[i][elVar] > 0) {
+			} else if (this.conditions[i][elIndex] > 0) {
 				P.add(i);
 			} else {
 				Z.add(i);
@@ -85,13 +86,14 @@ public class Elimination {
 	 * Scale the lines of the matrix, so that the row with index elVar only
 	 * contain {-1,0,1}
 	 */
-	public void scale(int elVar) {
+	public void scale(int elIndex) {
 
-		for (int i = 1; i < conditions.length; i++) {
+		for (int i = 0; i < conditions.length; i++) {
 
-			double n = this.conditions[i][elVar];
-			if (n < 0)
-				n = -n;
+			double n = Math.abs(this.conditions[i][elIndex]); // because we dont
+																// want change
+																// the
+																// inequality <=
 			for (int j = 0; j < this.conditions[1].length; j++) {
 
 				if (n != 0)
@@ -108,32 +110,28 @@ public class Elimination {
 	 * @return
 	 */
 	public boolean testIsNotZero(double[] dummy) {
-		boolean nonZero = false;
-		int i = 0;
-		while (i < dummy.length - 1) {
+		for (int i = 0; i < dummy.length - 1; i++) {
 			if (dummy[i] != 0)
-				nonZero = true;
-			i++;
+				return true;
 		}
-
-		return nonZero;
+		return false;
 	}
 
 	public boolean testEqualOrRedundant(double[][] solution, double[] dummy,
 			int i) {
-		boolean Equal = true;
+		boolean equal = true;
 
-		for (int j = 1; j < i; i++) {
+		for (int j = 0; j < i; i++) {
 
-			for (int k = 1; k < dummy.length - 1; k++) {
+			for (int k = 0; k < dummy.length - 1; k++) {
 				if (dummy[k] != solution[j][k]) {
-					Equal = false;
+					equal = false;
 					break;
 				}
 			}
-			if (Equal) {
+			if (equal) {
 				if (dummy[dummy.length - 1] >= solution[j][dummy.length - 1])
-					return Equal;
+					return equal;
 			}
 		}
 		return false;
@@ -143,9 +141,9 @@ public class Elimination {
 			double[] dummy, int i) {
 		boolean equal = true;
 
-		for (int j = 1; j < i; j++) {
+		for (int j = 0; j < i; j++) {
 
-			for (int k = 1; k < dummy.length - 1; k++) {
+			for (int k = 0; k < dummy.length - 1; k++) {
 				if (dummy[k] != solution[j][k]) {
 					equal = false;
 					break;
@@ -162,177 +160,185 @@ public class Elimination {
 
 		}
 		solution[i] = dummy;
-		this.numberOfConditionsNotZero++;
+		this.numberOfConditions++;
 		return solution;
 	}
 
 	/**
-	 * checks, if the coefficients of the arrays are equal (not the b part)
+	 * checks, if the coefficients of the arrays (with the same size) are equal
+	 * (not the b part)
 	 * 
 	 * @param array1
 	 * @param array2
 	 * @return
 	 */
-	public boolean testIsEqual(double[] array1, double[] array2) {
+	public boolean testVariablesAreEqual(double[] array1, double[] array2) {
 
-		for (int i = 0; i < array1.length; i++) {
+		for (int i = 0; i < array1.length - 1; i++) {
 			if (array1[i] != array2[i]) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
 
 	/**
 	 * Method to clear the conditions. We delete all 0-lines, redundant lines
 	 * and equal lines
 	 */
-
 	public void clearZeroEqualRedundant() {
 
-		int columns = this.conditions[1].length;
-		int rows = this.conditions.length;
+		int lineSize = this.conditions[1].length;
+		int numberOfLines = this.conditions.length;
 
-		double[][] matrix = new double[rows][columns];
+		double[][] solution = new double[numberOfLines][lineSize];
 
-		int numberOfConditionsNotZero = 0;
+		int numberOfConditions = 0;
+		boolean putIn = false;
 
-		// put the first nonzero line in matrix
-		for (int i = 1; i < rows; i++) {
+		int n = 0; // n will give us the index of the line where the first line
+					// was inserted
+
+		// put the first nonzero line in solution
+		// (go through the lines of 'conditions' and find the first nonzero
+		// line)
+		for (int i = 0; i < numberOfLines; i++) {
 			if (this.testIsNotZero(this.conditions[i])) {
-				matrix[1] = this.conditions[i];
-				numberOfConditionsNotZero++;
+				solution[0] = this.conditions[i];
+				numberOfConditions++;
+				n = i;
 				break;
 			}
 		}
 
-		// put all the other lines in matrix (when not zero, redundant or equal
-		// to another one)
-		for (int i = 2; i < rows; i++) { // take one line in conditions
-
-			// test if zero
+		// put all the other lines in matrix
+		for (int i = n + 1; i < numberOfLines; i++) { // take one line in
+														// conditions
+			putIn = true;
+			// test if the line is zero (or even the coefficients of the
+			// variables
 			if (testIsNotZero(this.conditions[i])) {
 
-				for (int j = 1; j <= numberOfConditionsNotZero; j++) { // and
-																		// compare
-																		// to
-																		// all
-																		// lines
-																		// in
-																		// matrix
+				// compare to all lines in solution
+				for (int j = 0; j < numberOfConditions; j++) {
 
-					// test if the coefficients are equal
-					if (testIsEqual(matrix[j], this.conditions[i])) {
+					// test if the coefficients of the variables are equal
+					if (testVariablesAreEqual(solution[j], this.conditions[i])) {
+						putIn = false; // we cant put the line in the solution
+										// (just if the b is less or equal)
 
+						// redundant test:
 						// if the b of the new line is less or equal than the
-						// line in the matrix put the condition line instead of
+						// line in solution put the condition line instead of
 						// the matrix line
-						if (matrix[j][columns - 1] >= this.conditions[i][columns - 1]) {
-							matrix[j] = this.conditions[i];
+						if (solution[j][lineSize - 1] >= this.conditions[i][lineSize - 1]) {
+							solution[j][lineSize - 1] = this.conditions[i][lineSize - 1];
 							break;
 						}
 					}
 				}
-				
-				// it is a new condition
-				numberOfConditionsNotZero++;
-				
-				// put it in the matrix
-				matrix[numberOfConditionsNotZero] = this.conditions[i];
+				// if we didnt swap the line already we can put it in a new
+				// line
+				if (putIn) {
+					
+					// the line is not zero, equal to another one in solution
+					// and not redundant
+					// put it in solution
+					solution[numberOfConditions] = this.conditions[i];
+
+					// it is a new condition
+					numberOfConditions++;
+				}
 			}
 		}
 
+		// now we create a copy of the matrix up to numberOfConditions. So we
+		// cut off the 0-lines in solution
+		double[][] solutionFinal = new double[numberOfConditions][lineSize];
+
+		for (int i = 0; i < numberOfConditions; i++) {
+			solutionFinal[i] = solution[i];
+		}
+
+		this.conditions = solutionFinal;
 	}
 
 	/**
 	 * 
-	 * @param system
-	 *            Matrix der Ungleichungen
-	 * @param elVar
-	 *            zu eliminierende Variable
-	 * @return
 	 */
+	public void lastClearZeroEqualRedundant() {
 
-	public void eliminate(int elVar) {
-
-		assign(elVar); // fill N,P,Z
-		System.out.println(Z.toString());
-		System.out.println(N.toString());
-		System.out.println(P.toString());
-
-		int length = this.conditions[1].length; // number of
-												// variables in the
-												// problem
-		this.numberOfConditionsNotZero = 0; // count the number of conditions
-											// that are not zero
-
-		this.scale(elVar); // scale matrix
-
-		// Create a new bigger matrix
-		double[][] solution = new double[N.size() * P.size() + Z.size() + 1][length];
-		for (int j = 0; j < this.conditions[0].length; j++) {
-			solution[0][j] = 0; // Fill first line with 0
+		int lastVariableIndex = -1;
+		for (int i = 0; i < this.conditions[1].length; i++) {
+			if (this.conditions[1][i] != 0) {
+				lastVariableIndex = i;
+				break;
+			}
 		}
 
+		this.scale(lastVariableIndex);
+		this.clearZeroEqualRedundant();
+
+	}
+
+	/**
+	 * This method scales the matrix and puts all lines of Z and all combination
+	 * of N and P in the new matrix
+	 * 
+	 * @param elVar
+	 *            the index we have to eliminate
+	 * @return
+	 */
+	public void eliminate(boolean lastElimination, int elIndex) {
+
+		assign(elIndex); // fill N,P,Z
+		System.out.println("Z: " + this.toStringList(Z));
+		System.out.println("N: " + this.toStringList(N));
+		System.out.println("P: " + this.toStringList(P));
+
+		int lineSize = this.conditions[1].length; // number of
+													// variables in the
+													// problem
+
+		this.scale(elIndex); // scale matrix
+
+		// Create a new bigger matrix
+		double[][] solution = new double[N.size() * P.size() + Z.size()][lineSize];
+
 		// insert lines from Z to the new matrix
-
-		int i = 1;
-		for (int x = 1; x <= Z.size(); x++) {
-
-			double[] dummy = new double[length];
-			dummy = this.conditions[Z.get(x - 1)];
-
-//			if (testIsNotZero(dummy)) {
-//
-//				solution = testEqualOrRedundant2(solution, dummy, i);
-//				i++;
-//
-//			}
-			solution[i] = dummy;
+		int i = 0; // gives us the position for the next line
+		for (int x = 0; x < Z.size(); x++) {
+			solution[i] = this.conditions[Z.get(x)];
+			i++;
 		}
 
 		// insert the combination of lines from N and P in the matrix
-
 		for (int l = 0; l < N.size(); l++) {
-
 			for (int k = 0; k < P.size(); k++) {
-
-				double[] dummy = new double[length];
-
-				for (int j = 0; j < dummy.length; j++) {
-					dummy[j] = this.conditions[N.get(l)][j]
+				for (int j = 0; j < lineSize; j++) {
+					solution[i][j] = this.conditions[N.get(l)][j]
 							+ this.conditions[P.get(k)][j];
-
 				}
-//				if (testIsNotZero(dummy)) { // test if all variables are zero
-//					// solution[i] = dummy; // if not insert the line in our
-//					// matrix
-//
-//					solution = testEqualOrRedundant2(solution, dummy, i);
-//					i++;
-//
-//					// if (!testIsNotZero(solution[i])) i++;
-//
-//				}
-				solution[i] = dummy;
 				i++;
 			}
 		}
-		System.out.println("DAS IST SOLUTION");
-		System.out.println(this.toStringSolution(solution));
-
-//		// now create an array with the right number of conditions. so we wont
-//		// have any 0-lines
-//		this.conditions = new double[this.numberOfConditionsNotZero + 1][length];
-//
-//		// copy the non-0-lines from solution to conditions
-//		for (int j = 1; j <= this.numberOfConditionsNotZero; j++) {
-//			this.conditions[j] = solution[j];
-//		}
-		
 		this.conditions = solution;
+
+		System.out.println("\n BEFORE CLEAR: \n");
+		System.out.println(this.toStringConditions());
+
 		this.clearZeroEqualRedundant();
+
+		System.out.println("\n AFTER CLEAR: \n");
+		System.out.println(this.toStringConditions());
+
+		if (lastElimination) {
+			this.lastClearZeroEqualRedundant();
+
+			System.out.println("\n AFTER LAST CLEAR: \n");
+			System.out.println(this.toStringConditions());
+		}
+
 	}
 
 	/**
@@ -344,8 +350,8 @@ public class Elimination {
 
 		StringBuffer string = new StringBuffer();
 
-		for (int j = 1; j < conditions.length; j++) {
-			for (int i = 1; i < conditions[j].length - 1; i++) {
+		for (int j = 0; j < conditions.length; j++) {
+			for (int i = 0; i < conditions[j].length - 1; i++) {
 				string.append(conditions[j][i] + " ");
 			}
 			string.append("\n \n");
@@ -357,14 +363,16 @@ public class Elimination {
 	/**
 	 * Method to print the conditions
 	 * 
-	 * @return String which contains all the conditions we can create out of the
-	 *         matrix line by line
+	 * @return String which contains all the conditions we can create out of
+	 *         'conditions' line by line
 	 */
 	public String toStringConditions() {
 
 		StringBuffer string = new StringBuffer();
 
-		for (int j = 1; j < conditions.length; j++) {
+		for (int j = 0; j < conditions.length; j++) {
+			string.append("( " + (j + 1) + " )      " + conditions[j][0]
+					+ "*x1");
 
 			for (int i = 1; i < conditions[j].length; i++) {
 
@@ -372,7 +380,8 @@ public class Elimination {
 				if (i == conditions[j].length - 1) {
 					string.append("<= " + conditions[j][i]);
 				} else { // other entries are coefficients
-					string.append(conditions[j][i] + "*x" + i + " ");
+					string.append(" + " + conditions[j][i] + "*x" + (i + 1)
+							+ " ");
 				}
 			}
 			string.append("\n \n");
@@ -385,7 +394,8 @@ public class Elimination {
 
 		StringBuffer string = new StringBuffer();
 
-		for (int j = 1; j < solution.length; j++) {
+		for (int j = 0; j < solution.length; j++) {
+			string.append(solution[j][0] + "*x1");
 
 			for (int i = 1; i < solution[j].length; i++) {
 
@@ -393,7 +403,7 @@ public class Elimination {
 				if (i == solution[j].length - 1) {
 					string.append("<= " + solution[j][i]);
 				} else { // other entries are coefficients
-					string.append(solution[j][i] + "*x" + i + " ");
+					string.append(" + " + solution[j][i] + "*x" + (i + 1) + " ");
 				}
 			}
 			string.append("\n \n");
@@ -412,10 +422,28 @@ public class Elimination {
 		StringBuffer string = new StringBuffer();
 
 		for (int i = 0; i < eliminationVariables.length; i++) {
-			string.append("X" + eliminationVariables[i] + " ");
+			string.append("X" + (eliminationVariables[i] + 1) + " ");
 		}
 		string.append("\n \n");
 		return string.toString();
+	}
+
+	public String toStringList(LinkedList<Integer> list) {
+		StringBuffer string = new StringBuffer("{ ");
+		Iterator<Integer> iter = list.iterator();
+		int k = 0;
+		if (iter.hasNext()) {
+			k = iter.next();
+			string.append((k + 1) + " ");
+		}
+
+		while (iter.hasNext()) {
+			k = iter.next();
+			string.append(", " + (k + 1) + " ");
+		}
+		string.append("}");
+		return string.toString();
+
 	}
 
 }

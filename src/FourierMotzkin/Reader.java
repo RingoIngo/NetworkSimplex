@@ -41,9 +41,10 @@ public class Reader {
 
 		// read in second line
 		line = reader2.readLine();
+		assert line != null : "There are no conditions given";
 		arr = line.split(" ");
 
-		// number of variables in the second line including 1 place for b.
+		// number of variables in the second line including one place for b.
 		int numberOfAllVariables = arr.length;
 
 		// number of conditions is now 1
@@ -55,14 +56,17 @@ public class Reader {
 		while ((line = reader2.readLine()) != null) {
 			numberOfConditions++;
 		}
+		System.out.println("The problem has " + numberOfConditions
+				+ " conditions with " + (numberOfAllVariables - 1)
+				+ " variables. We have to eliminate "
+				+ numberOfEliminationVariables + " variables.");
 
 		// create an array with variables to eliminate
 		int[] eliminationVariables = new int[numberOfEliminationVariables];
 
 		// create the matrix A with the coefficients. In the last column will be
 		// the vector b
-		// add +1 because the first row and the first column is 0
-		double[][] matrixA = new double[numberOfConditions + 1][numberOfAllVariables + 1];
+		double[][] conditions = new double[numberOfConditions][numberOfAllVariables];
 
 		/**
 		 * Here comes the read in part.
@@ -76,19 +80,18 @@ public class Reader {
 
 		// put all elimination variables in an array
 		for (int i = 0; i < numberOfEliminationVariables; i++) {
-			eliminationVariables[i] = Integer.parseInt(arr[i]);
+			eliminationVariables[i] = Integer.parseInt(arr[i]) - 1;
 		}
 
 		/**
 		 * Now put read every condition line and put all coefficients and b in a
-		 * matrix To keep it easy, the first line and the first column will be
-		 * 0.
+		 * matrix
 		 */
-		int j = 1; // the row index starts at 1
+		int j = 0; // the row index starts at 0
 		while ((line = reader.readLine()) != null) {
 			arr = line.split(" ");
 			for (int i = 0; i < arr.length; i++) {
-				matrixA[j][i + 1] = Double.parseDouble(arr[i]); // put
+				conditions[j][i] = Double.parseDouble(arr[i]); // put
 																// coefficient
 																// in the matrix
 																// A
@@ -98,7 +101,16 @@ public class Reader {
 		reader.close();
 		reader2.close();
 
-		Elimination elimination = new Elimination(matrixA, eliminationVariables);
+//		boolean oneVariableWillBeLeft = false;
+//
+//		// check if there will be just one variable left at the end of all
+//		// elimination
+//		if ((numberOfAllVariables - 1) == (numberOfEliminationVariables - 1)) {
+//			oneVariableWillBeLeft = true;
+//		}
+
+		Elimination elimination = new Elimination(conditions,
+				eliminationVariables);
 		this.elimination = elimination;
 
 	}
