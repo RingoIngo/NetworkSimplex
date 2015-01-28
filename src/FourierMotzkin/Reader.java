@@ -32,7 +32,7 @@ public class Reader {
 		String[] arr = line.split(" ");
 
 		// number of variables in the first line
-		int numberOfEliminationVariables = arr.length;
+		int numberOfEliminationVariables = arr.length-1;
 
 		/**
 		 * Then we determine the number of variables in the problem. We found
@@ -45,7 +45,7 @@ public class Reader {
 		arr = line.split(" ");
 
 		// number of variables in the second line including one place for b.
-		int numberOfAllVariables = arr.length;
+		int numberOfAllVariables = arr.length-1;
 
 		// number of conditions is now 1
 		int numberOfConditions = 1;
@@ -80,7 +80,7 @@ public class Reader {
 
 		// put all elimination variables in an array
 		for (int i = 0; i < numberOfEliminationVariables; i++) {
-			eliminationVariables[i] = Integer.parseInt(arr[i]) - 1;
+			eliminationVariables[i] = Integer.parseInt(arr[i+1]) - 1;
 		}
 
 		/**
@@ -90,8 +90,8 @@ public class Reader {
 		int j = 0; // the row index starts at 0
 		while ((line = reader.readLine()) != null) {
 			arr = line.split(" ");
-			for (int i = 0; i < arr.length; i++) {
-				conditions[j][i] = Double.parseDouble(arr[i]); // put
+			for (int i = 1; i < arr.length; i++) {
+				conditions[j][i-1] = Double.parseDouble(arr[i]); // put
 																// coefficient
 																// in the matrix
 																// A
@@ -100,14 +100,6 @@ public class Reader {
 		}
 		reader.close();
 		reader2.close();
-
-//		boolean oneVariableWillBeLeft = false;
-//
-//		// check if there will be just one variable left at the end of all
-//		// elimination
-//		if ((numberOfAllVariables - 1) == (numberOfEliminationVariables - 1)) {
-//			oneVariableWillBeLeft = true;
-//		}
 
 		Elimination elimination = new Elimination(conditions,
 				eliminationVariables);
